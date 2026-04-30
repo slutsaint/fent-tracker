@@ -54,8 +54,7 @@ If a chapter passes its deadline and is not finished, it moves to the backlog. T
 
 ## Test Schedule
 
-The system follows a standard testing frequency to build exam stamina:
-
+The tracker follows a high testing frequency that i made for myself which is as follows-
 | Format | Frequency | Max Score |
 | :--- | :--- | :--- |
 | **JEE Mains** | 3 per month | 300 Marks |
