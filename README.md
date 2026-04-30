@@ -52,11 +52,11 @@ If a chapter passes its deadline and is not finished, it moves to the backlog. T
 
 ---
 
-## Test Schedule
+### 6. Test tracking
 <img width="1388" height="924" alt="image" src="https://github.com/user-attachments/assets/f892c5bc-8fd7-49a2-b4e9-19b3a0b6b375" />
 
 
-The tracker follows a high testing frequency that i made for myself which is as follows, you can input your score and it helpful provives analytics.
+The tracker lets input your score and it provives helpful analytics. tests are sheduled,it follows a high testing frequency that i made for myself which is as follows:
 | Format | Frequency | Max Score |
 | :--- | :--- | :--- |
 | **JEE Mains** | 3 per month | 300 Marks |
