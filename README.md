@@ -1,6 +1,6 @@
 # fent.
 
-a study tracker i built for myself. sharing it in case it helps someone else in the same boat.
+a study tracker i had built for myself. sharing it in case it helps someone else in the same boat.
 
 built this for **jee 2027 droppers** who want to actually know where they stand, not just vaguely feel behind. no fluff, no gamification, just your syllabus and your progress laid out cleanly.
 
