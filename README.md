@@ -55,16 +55,15 @@ you can log your scores, physics, chemistry, maths separately, and the tracker k
 
 ## how to use
 
-just open `fent_work.html` in a browser. no server, no install, no account. everything saves to your browser's local storage.
+just open `https://fent-nu.vercel.app/` in a browse
 
-if you clear local storage you lose your progress. so don't do that.
 
 ## honest notes
 
 - built for personal use, schedule is tuned to my own syllabus ordering
 - dates and chapter ordering are opinionated, roughly follows standard dropper batch flow
 - nothing is synced anywhere, it's all local
-- the design is dark oled because i stare at this at 2am
+- the design is dark oled because i prefer that
 
 if it's useful to you, nice. if you want to fork it and adjust the chapter list or dates, the data is all at the top of the html file, just edit the `MATH`, `CHEM`, `PHYS` arrays.
 
