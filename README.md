@@ -5,7 +5,7 @@
 
 ## Intent
 
- This is a personal project used to track every chapter in the JEE syllabus  over a 7 month period from **April  to November**. It is built for a drop year students. There are no social features or any distractions.
+ This is a personal project used to track every chapter in the JEE syllabus  over a 7 month period from **April  to November**. It is built for drop year students. There are no social features or any distractions.
 
 ---
 
@@ -24,10 +24,10 @@ The dashboard is designed to limit your focus to the current seven days. Looking
 </p>
 
 The subject lists contain every chapter in the JEE syllabus. To ensure the study quality is high, a chapter is not considered "done" until four specific steps are checked off:
-*   **Theory**: Reading the concepts and making notes.
+*   **Theory**: Watching lectures and making notes.
 *   **Module**: Solving the standard practice questions from your material.
-*   **PYQ**: Finishing the previous year questions to see the actual exam level.
-*   **Revision**: A final review to make sure the information sticks.
+*   **PYQ**: Finishing the previous year questions to expose yourself to actual exam level.
+*   **Revision**: A final review.
 
 ### 3. Analytics and Performance
 <p align="center">
@@ -69,7 +69,7 @@ The tracker lets input your score and it provides helpful analytics. Tests are s
 
 *   **Live App**: [fent-nu.vercel.app](https://fent-nu.vercel.app/)
 *   **Privacy**: All data is stored locally in your browser. No data is sent to a server, and no account is required.
-*   **UI**: Minimalist, OLED-optimized dark mode to reduce eye strain during long hours.
+*   **UI**: Minimalist,clean ,dark to reduce eye strain.
 *   **Customization**: The syllabus and dates are stored in data arrays (`MATH`, `CHEM`, `PHYS`) in the source code for easy editing.
 
 ---
