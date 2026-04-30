@@ -1,12 +1,11 @@
 # fent.
 
-> A minimalist study tracker for JEE 2027 . This tool is vibecoded for a clean look and built for personal use to maintain an honest view of the shedule.
-
+> A minimalist study tracker for JEE 2027 . This tool is vibecoded for a clean look and built for personal use to maintain track of study.
 ---
 
 ## Intent
 
- This is a personal project used to track every chapter in Physics, Chemistry, and Mathematics over a six-month period from **April 2026 to October 2026**. It is built for a drop year where keeping a clear head is a priority. There are no social features or distractions; it is just you and the data.
+ This is a personal project used to track every chapter in the JEE syllabus  over a 7 month period from **April  to November**. It is built for a drop year students. There are no social features or any distractions.
 
 ---
 
@@ -73,4 +72,3 @@ The system follows a standard testing frequency to build exam stamina:
 
 ---
 
-*Focus on the facts. Stay honest with your progress.*
