@@ -1,69 +1,76 @@
 # fent.
 
-a study tracker i had built for myself. sharing it in case it helps someone else in the same boat.
+> A minimalist study tracker for JEE 2027 . This tool is vibecoded for a clean look and built for personal use to maintain an honest view of the shedule.
 
-built this for **jee 2027 droppers** who want to actually know where they stand, not just vaguely feel behind. no fluff, no gamification, just your syllabus and your progress laid out cleanly.
+---
 
-the schedule covers the entire jee syllabus across maths, chemistry, and physics, broken down chapter by chapter from **april 2026 to october 2026**. every chapter has a start and end date. you either finish it or you don't. the tracker knows.
+## Intent
 
-## what's inside
+ This is a personal project used to track every chapter in Physics, Chemistry, and Mathematics over a six-month period from **April 2026 to October 2026**. It is built for a drop year where keeping a clear head is a priority. There are no social features or distractions; it is just you and the data.
 
-### overview, this week's plan
+---
 
-<img width="1079" height="1120" alt="1" src="https://github.com/user-attachments/assets/3612ea0c-4260-4f1f-9ae9-67eec0b49f8c" />
+## Functional Components
 
+### 1. The Weekly Window
+<p align="center">
+  <img width="100%" alt="Weekly View" src="https://github.com/user-attachments/assets/3612ea0c-4260-4f1f-9ae9-67eec0b49f8c" />
+</p>
 
-shows you exactly what you're supposed to be doing in the current 7 day window. chapters that fall in this week, their subject tags, how many tasks you've done, and whether any tests are scheduled. you can also browse past or future weeks with the prev/next buttons. the progress bar at the top fills up as you tick things off. simple.
+The dashboard is designed to limit your focus to the current seven days. Looking at the entire syllabus at once can be overwhelming, so this view isolates only the chapters you need to work on right now. It shows the subject tags, how many tasks you have finished, and a progress bar that gives a neutral look at your weekly output.
 
-### subject lists, maths, chem, physics
+### 2. Syllabus Management
+<p align="center">
+  <img width="100%" alt="Subject List" src="https://github.com/user-attachments/assets/1c9a5c92-ebc1-4773-a754-3f59fe58cc48" />
+</p>
 
-<img width="1148" height="1051" alt="2" src="https://github.com/user-attachments/assets/1c9a5c92-ebc1-4773-a754-3f59fe58cc48" />
+The subject lists contain every chapter in the JEE syllabus. To ensure the study quality is high, a chapter is not considered "done" until four specific steps are checked off:
+*   **Theory**: Reading the concepts and making notes.
+*   **Module**: Solving the standard practice questions from your material.
+*   **PYQ**: Finishing the previous year questions to see the actual exam level.
+*   **Revision**: A final review to make sure the information sticks.
 
+### 3. Analytics and Performance
+<p align="center">
+  <img width="100%" alt="Analytics" src="https://github.com/user-attachments/assets/7633fe9a-cdda-4581-9d5a-cd30262eab12" />
+</p>
 
-each subject has every chapter listed with its scheduled date. click a chapter to expand it and you get four checkboxes, **theory, module, pyq, revision**. these four are what done means. a chapter is only marked complete when all four are ticked. you can filter by all, in progress, completed and search by name.
+The analytics section provides a factual summary of your progress. Ring charts display the completion percentage for each subject. It also tracks your performance in mock tests by recording your scores for both Mains and Advanced formats. This helps you see if you are actually improving or just staying at the same level.
 
-### analytics
+### 4. Activity Heatmap
+<p align="center">
+  <img width="100%" alt="Heatmap" src="https://github.com/user-attachments/assets/3e7ea00a-c1b0-45da-a2c5-585493cb27c7" />
+</p>
 
-<img width="1064" height="1131" alt="3" src="https://github.com/user-attachments/assets/7633fe9a-cdda-4581-9d5a-cd30262eab12" />
+This is a visual record of your work over time. Similar to a GitHub contribution graph, each box represents a day. The color gets darker based on how many tasks you completed on that specific date. Since it logs activity when you actually tick a task, it serves as an honest history of your consistency.
 
+### 5. Backlog Tracking
+<p align="center">
+  <img width="100%" alt="Backlog" src="https://github.com/user-attachments/assets/a55e6950-7b69-42cc-b47e-59a1e40e0779" />
+</p>
 
-a quick dashboard of where things actually stand. three ring charts for maths, chem and physics showing completion percentages. below that, completion by type so you can see if you're doing theory but skipping pyqs, you probably are. then average marks for mains and advanced tests recorded so far.
+If a chapter passes its deadline and is not finished, it moves to the backlog. The system tracks exactly how many days late you are and sets your status to "On track," "Slightly behind," or "Danger zone". It is a simple way to see exactly how much work you need to catch up on.
 
-### study heatmap
+---
 
-<img width="1400" height="848" alt="4" src="https://github.com/user-attachments/assets/3e7ea00a-c1b0-45da-a2c5-585493cb27c7" />
+## Test Schedule
 
+The system follows a standard testing frequency to build exam stamina:
 
-this one is my favourite. a github style heatmap that shows every day from april to october. each cell is a day, the colour tells you how much study activity happened on that day. click any cell and it shows you exactly which chapters you worked on and how many tasks got done. you can filter by month using the tabs at the top. if a week looks empty you already know what that means.
+| Format | Frequency | Max Score |
+| :--- | :--- | :--- |
+| **JEE Mains** | 3 per month | 300 Marks |
+| **JEE Advanced** | 1 per month | 360 Marks |
 
-the heatmap records activity on the actual date you tick a task, so it's a real log of what you did and when, not just estimated.
+---
 
-### backlog tracker
+## Technical Specs
 
-<img width="1221" height="980" alt="5" src="https://github.com/user-attachments/assets/a55e6950-7b69-42cc-b47e-59a1e40e0779" />
+*   **Live App**: [fent-nu.vercel.app](https://fent-nu.vercel.app/)
+*   **Privacy**: All data is stored locally in your browser. No data is sent to a server, and no account is required.
+*   **UI**: Minimalist, OLED-optimized dark mode to reduce eye strain during long hours.
+*   **Customization**: The syllabus and dates are stored in data arrays (`MATH`, `CHEM`, `PHYS`) in the source code for easy editing.
 
+---
 
-if the current date has passed a chapter's deadline and it's not done, it shows up here as overdue. you get a status, **on track, slightly behind, danger zone**, based on how many chapters are past due. it lists every overdue chapter with how many days late it is and which subject it belongs to. pretty good at making you feel bad in a productive way.
-
-## test schedule
-
-tests are baked into the schedule. every month from may to october has,
-- **3 mains tests** on sundays
-- **1 advanced test** on the last sunday of the month
-
-you can log your scores, physics, chemistry, maths separately, and the tracker keeps a score trend chart and running averages. mains is out of 300, advanced is out of 360.
-
-## how to use
-
-just open `https://fent-nu.vercel.app/` in a browse
-
-
-## honest notes
-
-- built for personal use, schedule is tuned to my own syllabus ordering
-- dates and chapter ordering are opinionated, roughly follows standard dropper batch flow
-- nothing is synced anywhere, it's all local
-- the design is dark oled because i prefer that
-
-if it's useful to you, nice. if you want to fork it and adjust the chapter list or dates, the data is all at the top of the html file, just edit the `MATH`, `CHEM`, `PHYS` arrays.
-
+*Focus on the facts. Stay honest with your progress.*
