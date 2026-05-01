@@ -417,6 +417,313 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .hm-month-tab:hover{color:var(--t2);border-color:rgba(255,255,255,0.15);}
 .hm-month-tab.hm-tab-on{color:var(--t1);background:var(--s2);border-color:rgba(255,255,255,0.18);}
 
+
+/* ─── SETTINGS BUTTON (fixed top-right of header) ─── */
+.settings-btn{
+  position:fixed;top:24px;right:24px;z-index:8000;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--b2);
+  background:var(--s1);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 0 0 0 rgba(194,163,89,0);
+}
+.settings-btn:hover{
+  border-color:rgba(255,255,255,0.26);
+  background:var(--s2);
+  box-shadow:0 0 18px rgba(194,163,89,0.08),0 0 0 1px rgba(194,163,89,0.12);
+}
+.settings-btn svg{transition:inherit;pointer-events:none;}
+
+/* ─── CALIBRATE OVERLAY ─── */
+@keyframes calOverIn{from{opacity:0}to{opacity:1}}
+@keyframes calPanelIn{from{opacity:0;transform:translateY(14px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes calSlideRight{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes calFadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.cal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);
+  z-index:8500;display:flex;align-items:flex-start;justify-content:center;
+  padding:24px 16px 40px;overflow-y:auto;
+  animation:calOverIn .25s var(--ease) both;
+}
+.cal-overlay.hidden{display:none}
+.cal-panel{
+  width:100%;max-width:640px;
+  background:var(--s1);border:1px solid var(--b2);border-radius:16px;
+  overflow:hidden;
+  animation:calPanelIn .35s var(--ease) both;
+  box-shadow:0 24px 60px rgba(0,0,0,0.85),0 0 0 1px rgba(255,255,255,0.04);
+  margin-top:12px;
+}
+.cal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 24px 20px;border-bottom:1px solid var(--b1);
+}
+.cal-head-left{display:flex;flex-direction:column;gap:3px;}
+.cal-head-eye{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);font-weight:400;}
+.cal-head-title{font-size:18px;font-weight:400;color:var(--t1);letter-spacing:-.02em;}
+.cal-close{
+  width:26px;height:26px;border-radius:50%;border:1px solid var(--b1);
+  background:transparent;color:var(--t2);cursor:pointer;font-size:11px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;font-weight:300;
+  flex-shrink:0;
+}
+.cal-close:hover{background:var(--s2);color:var(--t1);border-color:var(--b2);}
+
+/* Cal Tabs */
+.cal-tabs{display:flex;gap:0;border-bottom:1px solid var(--b1);padding:0 24px;}
+.cal-tab{
+  font-size:11px;font-weight:400;padding:12px 18px 12px 0;
+  border:none;background:transparent;color:var(--t3);cursor:pointer;
+  transition:color .3s;letter-spacing:.02em;position:relative;white-space:nowrap;
+}
+.cal-tab:hover{color:var(--t2);}
+.cal-tab.on{color:var(--t1);}
+.cal-tab.on::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:18px;height:1px;
+  background:var(--t1);transform-origin:left;animation:tabSlide .3s var(--ease) backwards;
+}
+
+/* Cal Body */
+.cal-body{padding:24px;min-height:360px;}
+.cal-panel-section{display:none;animation:calFadeUp .3s var(--ease) both;}
+.cal-panel-section.on{display:block;}
+
+/* Subject selector inside cal */
+.cal-subj-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.cal-subj-tab{
+  font-size:10px;font-weight:400;padding:5px 12px;border-radius:20px;
+  border:1px solid var(--b1);background:transparent;color:var(--t3);cursor:pointer;
+  letter-spacing:.04em;transition:all .2s;text-transform:uppercase;
+}
+.cal-subj-tab:hover{border-color:var(--b2);color:var(--t2);}
+.cal-subj-tab.on{background:var(--s2);border-color:var(--b2);color:var(--t1);}
+
+/* Chapter date row */
+.cal-ch-list{display:flex;flex-direction:column;gap:3px;}
+.cal-ch-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:var(--bg);border-radius:8px;
+  border:1px solid var(--b1);transition:all .2s;
+  cursor:grab;
+  animation:calFadeUp .3s var(--ease) backwards;
+}
+.cal-ch-row:hover{border-color:var(--b2);background:var(--s2);}
+.cal-ch-row.dragging{opacity:0.4;cursor:grabbing;}
+.cal-ch-row.drag-over{border-color:var(--m);background:rgba(194,163,89,0.06);transform:scale(1.01);}
+.cal-ch-handle{
+  display:flex;flex-direction:column;gap:2.5px;flex-shrink:0;cursor:grab;padding:2px 0;
+}
+.cal-ch-handle span{display:block;width:12px;height:1.5px;background:var(--t3);border-radius:99px;transition:background .2s;}
+.cal-ch-row:hover .cal-ch-handle span{background:var(--t2);}
+.cal-ch-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);width:20px;flex-shrink:0;font-weight:300;}
+.cal-ch-name{flex:1;font-size:12px;color:var(--t1);font-weight:400;letter-spacing:-.01em;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* Date groups wrapper — inline on desktop, wraps to new row on mobile */
+.cal-dates-wrap{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.cal-date-grp{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.cal-date-seg{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:300;
+  background:transparent;border:none;border-bottom:1px solid var(--b2);
+  color:var(--t1);outline:none;transition:border-color .15s,color .15s;text-align:center;
+  padding:2px 0;border-radius:0;
+}
+.cal-date-seg:focus{border-bottom-color:var(--m);color:var(--t1);}
+.cal-date-seg.day-inp{width:22px;}
+.cal-date-arrow{font-size:9px;color:var(--b2);margin:0 6px;flex-shrink:0;}
+
+/* Month stepper — pill control */
+.cal-mon-wrap{
+  display:flex;align-items:center;gap:0;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:5px;overflow:hidden;
+  transition:border-color .15s;
+}
+.cal-mon-wrap:hover{border-color:var(--b2);}
+.cal-mon-btn{
+  width:20px;height:22px;border:none;background:transparent;
+  color:var(--t3);cursor:pointer;font-size:9px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .15s,background .15s;flex-shrink:0;
+  padding:0;line-height:1;
+}
+.cal-mon-btn:hover{color:var(--t1);background:rgba(255,255,255,0.05);}
+.cal-mon-name{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t2);
+  font-weight:300;width:26px;text-align:center;letter-spacing:.03em;
+  border-left:1px solid var(--b1);border-right:1px solid var(--b1);
+  line-height:22px;
+}
+
+/* Save button */
+.cal-save-bar{
+  padding:16px 24px;border-top:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.cal-save-btn{
+  padding:9px 22px;background:var(--t1);color:var(--bg);border:none;
+  border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;
+  letter-spacing:.04em;transition:all .2s;
+}
+.cal-save-btn:hover{background:var(--t2);}
+.cal-reset-btn{
+  font-size:10px;color:var(--t3);background:transparent;border:none;cursor:pointer;
+  letter-spacing:.03em;transition:color .2s;padding:4px 0;
+}
+.cal-reset-btn:hover{color:var(--red);}
+.cal-save-msg{font-size:10px;color:var(--c);opacity:0;transition:opacity .4s;letter-spacing:.04em;}
+.cal-save-msg.visible{opacity:1;}
+
+/* ─── TEST SLIDER SECTION ─── */
+.cal-test-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:520px){.cal-test-grid{grid-template-columns:1fr;}}
+.cal-slider-card{
+  background:var(--bg);border:1px solid var(--b1);border-radius:10px;padding:18px 18px 16px;
+  transition:border-color .2s;
+}
+.cal-slider-card:hover{border-color:var(--b2);}
+.cal-slider-label{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--t2);margin-bottom:12px;}
+.cal-slider-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:300;color:var(--t1);letter-spacing:-.04em;line-height:1;margin-bottom:4px;}
+.cal-slider-sub{font-size:9px;color:var(--t3);letter-spacing:.04em;margin-bottom:14px;line-height:1.5;}
+.cal-slider-track{position:relative;height:3px;background:var(--s3);border-radius:99px;margin:14px 0 8px;cursor:pointer;}
+.cal-slider-fill{height:100%;border-radius:99px;transition:width .2s var(--ease);position:relative;}
+.cal-slider-fill-mains{background:linear-gradient(90deg,rgba(196,100,100,0.6),var(--red));}
+.cal-slider-fill-adv{background:linear-gradient(90deg,rgba(255,136,136,0.5),#ff8888);}
+.cal-slider-thumb{
+  position:absolute;top:50%;right:-1px;transform:translate(50%,-50%);
+  width:13px;height:13px;border-radius:50%;
+  border:2px solid var(--bg);
+  box-shadow:0 0 0 1px var(--b2),0 2px 8px rgba(0,0,0,0.5);
+  transition:transform .15s,box-shadow .15s;cursor:grab;
+}
+.cal-slider-thumb:active{cursor:grabbing;transform:translate(50%,-50%) scale(1.25);}
+.cal-slider-thumb-mains{background:var(--red);}
+.cal-slider-thumb-adv{background:#ff8888;}
+.cal-slider-ticks{display:flex;justify-content:space-between;padding:0 1px;}
+.cal-slider-tick{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);font-weight:300;}
+.cal-slider-tick.active{color:var(--t2);}
+
+/* Preview schedule - Calendar grid style */
+.cal-schedule-preview{margin-top:20px;}
+.cal-schedule-title{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;font-weight:500;}
+.cal-sched-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+@media(max-width:500px){.cal-sched-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* ═══════════════════════════════════════════════
+   MOBILE RESPONSIVE — 480px and below
+═══════════════════════════════════════════════ */
+@media(max-width:480px){
+
+  /* Shell */
+  .shell{padding:32px 16px 100px;}
+
+  /* Header */
+  .top{margin-bottom:32px;gap:10px;}
+  .brand-name{font-size:22px;}
+  .mpct{font-size:26px;}
+
+  /* Tabs */
+  .tab{padding:11px 14px 11px 0;font-size:11px;}
+
+  /* Chapter header row — hide date to prevent overflow */
+  .ch-hd{gap:8px;padding:13px 12px;}
+  .ch-dt{display:none;}
+  .ch-nm{font-size:12px;}
+
+  /* Task grid — 1 column on mobile */
+  .tg{grid-template-columns:1fr;}
+  .tk{padding:11px 12px;}
+  .tl{font-size:11px;}
+
+  /* Overview pulse items */
+  .pulse-item-hd{gap:8px;padding:11px 12px;}
+  .pulse-item-name{font-size:12px;}
+  .pulse-item-dates{display:none;}
+  .pulse-test-row{gap:8px;padding:11px 12px;}
+  .pulse-t-name{font-size:12px;}
+  .pulse-t-date{display:none;}
+  .pulse-nav-btn{padding:8px 10px;font-size:9px;}
+
+  /* Analytics */
+  .ana-two-col{grid-template-columns:1fr;}
+  .ana-section{padding:16px;}
+  .subj-prog-meta{width:80px;}
+  .subj-prog-name{font-size:11px;}
+  .ring-wheel-wrap{gap:16px;}
+  .track-card{flex-direction:column;align-items:flex-start;padding:14px 16px;}
+  .track-stats-row{width:100%;}
+  .track-stat-item{padding:0 10px;}
+  .track-stat-num{font-size:18px;}
+
+  /* Settings button — smaller gap from edge */
+  .settings-btn{top:16px;right:16px;width:32px;height:32px;}
+
+  /* Calibrate overlay */
+  .cal-overlay{padding:12px 8px 32px;}
+  .cal-panel{border-radius:12px;margin-top:0;}
+  .cal-head{padding:16px 16px 14px;}
+  .cal-head-title{font-size:16px;}
+  .cal-tabs{padding:0 16px;}
+  .cal-body{padding:16px;min-height:280px;}
+  .cal-save-bar{padding:12px 16px;flex-wrap:wrap;gap:10px;}
+  .cal-save-btn{padding:10px 20px;flex:1;text-align:center;}
+
+  /* Calibrate chapter rows — dates wrap to second line on mobile */
+  .cal-ch-row{
+    flex-wrap:wrap;
+    gap:8px 6px;
+    padding:10px 12px;
+    cursor:default;
+  }
+  .cal-ch-handle{flex-shrink:0;}
+  .cal-ch-num{flex-shrink:0;}
+  .cal-ch-name{flex:1;min-width:0;}
+  /* Dates wrap to second line, indented under name */
+  .cal-dates-wrap{
+    width:100%;
+    padding-left:38px; /* aligns under chapter name (handle+num width) */
+    flex-shrink:0;
+  }
+
+  /* Mon stepper — larger touch targets */
+  .cal-mon-btn{width:26px;height:28px;font-size:11px;}
+  .cal-mon-name{line-height:28px;font-size:8px;width:24px;}
+  .cal-date-seg.day-inp{width:20px;font-size:10px;}
+
+  /* Test sliders */
+  .cal-test-grid{grid-template-columns:1fr;}
+  .cal-sched-grid{grid-template-columns:repeat(2,1fr);}
+
+  /* Score modal */
+  .modal{padding:24px 16px 20px;}
+  .score-input{width:70px;font-size:13px;}
+}
+
+/* ── Extra small (iPhone SE, 375px) ── */
+@media(max-width:380px){
+  .shell{padding:28px 12px 100px;}
+  .brand-name{font-size:20px;}
+  .mpct{font-size:22px;}
+  .ch-n{display:none;}
+  .cal-body{padding:12px;}
+  .cal-head{padding:14px 12px;}
+  .cal-tabs{padding:0 12px;}
+  .cal-save-bar{padding:10px 12px;}
+}
+.cal-sched-month-card{background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:12px;transition:border-color .2s;}
+.cal-sched-month-card:hover{border-color:var(--b2);}
+.cal-sched-month-name{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-weight:400;}
+.cal-sched-month-rows{display:flex;flex-direction:column;gap:3px;}
+.cal-sched-test-row{display:flex;align-items:center;gap:6px;}
+.cal-sched-test-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.cal-sched-test-dot.mains{background:var(--red);}
+.cal-sched-test-dot.adv{background:#ff8888;}
+.cal-sched-test-info{display:flex;align-items:baseline;gap:4px;flex:1;}
+.cal-sched-test-label{font-size:9px;color:var(--t2);font-weight:400;letter-spacing:.02em;}
+.cal-sched-test-date{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);font-weight:300;}
+.cal-sched-empty{font-size:9px;color:var(--t3);opacity:.5;letter-spacing:.04em;}
+
 </style>
 </head>
 <body>
@@ -433,7 +740,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
   </div>
 
-  <div class="tabs">
+  <!-- SETTINGS BUTTON -->
+<button class="settings-btn" id="settingsBtn" onclick="openCalibrate()" title="Settings">
+  <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
+    <line x1="1" y1="2" x2="13" y2="2" stroke="rgba(228,228,231,0.65)" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="4.5" cy="2" r="1.5" fill="var(--s1)" stroke="rgba(228,228,231,0.65)" stroke-width="1.2"/>
+    <line x1="1" y1="6" x2="13" y2="6" stroke="rgba(228,228,231,0.65)" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="9.5" cy="6" r="1.5" fill="var(--s1)" stroke="rgba(228,228,231,0.65)" stroke-width="1.2"/>
+    <line x1="1" y1="10" x2="13" y2="10" stroke="rgba(228,228,231,0.65)" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="4.5" cy="10" r="1.5" fill="var(--s1)" stroke="rgba(228,228,231,0.65)" stroke-width="1.2"/>
+  </svg>
+</button>
+
+<div class="tabs">
     <button class="tab on" onclick="go('overview',this)">Overview</button>
     <button class="tab" onclick="go('math',this)">Maths<span class="tbadge" id="bM">0/26</span></button>
     <button class="tab" onclick="go('chem',this)">Chem<span class="tbadge" id="bC">0/23</span></button>
@@ -555,10 +874,12 @@ function buildTestSchedule(){
     const d=new Date(2026,m,1);
     while(d.getMonth()===m){if(d.getDay()===0) sundays.push(new Date(d));d.setDate(d.getDate()+1);}
     for(let i=0;i<Math.min(3,sundays.length-1);i++){
-      tests.push({id:`m_${mi}_${i}`,name:`Mains Test ${i+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
+      const sd=sundays[i];
+      tests.push({id:`m_${sd.getFullYear()}_${sd.getMonth()}_${i}`,name:`Mains Test ${i+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
     }
     if(sundays.length>=1){
-      tests.push({id:`a_${mi}`,name:`Advanced Test`,date:sundays[sundays.length-1],type:'adv',month:label,monthIdx:mi});
+      const sd=sundays[sundays.length-1];
+      tests.push({id:`a_${sd.getFullYear()}_${sd.getMonth()}_0`,name:`Advanced Test`,date:sundays[sundays.length-1],type:'adv',month:label,monthIdx:mi});
     }
   });
   return tests;
@@ -1136,11 +1457,11 @@ function renderAnalytics(){
     trackStatus='Danger Zone';trackColor='var(--red)';trackDesc=backlog.length+' chapters overdue — immediate catch-up required.';
   }
 
-  /* ── Heatmap weekly data ── */
-  const heatStart=new Date(2026,3,13);
+  /* ── Heatmap weekly data — derived from live tracker range ── */
+  const {start: heatStart, end: heatEnd} = getTrackerRange();
   const weeks=[];
   let wkPtr=new Date(heatStart);
-  while(wkPtr<=finalDeadline){
+  while(wkPtr<=heatEnd){
     const wkE=new Date(wkPtr); wkE.setDate(wkPtr.getDate()+6);
     let wkTotal=0,wkDone=0;
     allSubjs.forEach(({s,ch})=>{
@@ -1486,9 +1807,8 @@ function buildHeatmap(weeks,today){
     });
   });
 
-  // Date range: Apr 13 → Oct 14 2026
-  const startDate=new Date(2026,3,13);
-  const endDate=new Date(2026,9,14);
+  // Date range: derived from actual chapter dates
+  const {start: startDate, end: endDate} = getTrackerRange();
 
   // Build weeks grid starting from Sunday before startDate
   const gridStart=new Date(startDate);
@@ -1604,7 +1924,7 @@ function buildHeatmap(weeks,today){
       <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;font-weight:300;margin-right:2px;">Less</span>
       ${['rgba(255,255,255,0.04)','rgba(194,163,89,0.3)','rgba(194,163,89,0.55)','rgba(107,158,131,0.75)','rgba(107,158,131,0.95)'].map(c=>`<div style="width:${CELL}px;height:${CELL}px;background:${c};border-radius:3px;flex-shrink:0;"></div>`).join('')}
       <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;font-weight:300;margin-left:2px;">More</span>
-      <span style="margin-left:auto;font-size:9px;color:var(--t3);opacity:.4;font-family:'JetBrains Mono',monospace;">Apr – Oct 2026</span>
+      <span style="margin-left:auto;font-size:9px;color:var(--t3);opacity:.4;font-family:'JetBrains Mono',monospace;">${MONTHS[startDate.getMonth()]} – ${MONTHS[endDate.getMonth()]} ${endDate.getFullYear()}</span>
     </div>
   </div>
 </div>`;
@@ -1751,14 +2071,107 @@ function hmDayClick(el,dateKey,chapters){
   det.style.animation='none';void det.offsetWidth;det.style.animation='fadeUp .2s var(--ease) both';
 }
 
-(function(){
-  document.getElementById('listM').innerHTML=MATH.map((ch,i)=>card('math',ch,i)).join('');
-  document.getElementById('listC').innerHTML=CHEM.map((ch,i)=>card('chem',ch,i)).join('');
-  document.getElementById('listP').innerHTML=PHYS.map((ch,i)=>card('phys',ch,i)).join('');
-  stats();
-  renderPulse();
-})();
 </script>
+
+<!-- ═══════════════════════════════════════════════
+     CALIBRATE OVERLAY
+═══════════════════════════════════════════════ -->
+<div class="cal-overlay hidden" id="calOverlay">
+  <div class="cal-panel" id="calPanel">
+    <div class="cal-head">
+      <div class="cal-head-left">
+        <div class="cal-head-eye">Settings</div>
+        <div class="cal-head-title">Customize</div>
+      </div>
+      <button class="cal-close" onclick="closeCalibrate()">✕</button>
+    </div>
+
+    <div class="cal-tabs">
+      <button class="cal-tab on" onclick="calTab('schedule',this)">Schedule</button>
+      <button class="cal-tab" onclick="calTab('tests',this)">Tests</button>
+    </div>
+
+    <!-- SCHEDULE SECTION -->
+    <div class="cal-panel-section on" id="calSec-schedule">
+      <div class="cal-body" style="padding-bottom:0;">
+        <div class="cal-subj-tabs" id="calSubjTabs">
+          <button class="cal-subj-tab on" onclick="calSubj('math',this)" data-color="var(--m)">Maths</button>
+          <button class="cal-subj-tab" onclick="calSubj('chem',this)" data-color="var(--c)">Chem</button>
+          <button class="cal-subj-tab" onclick="calSubj('phys',this)" data-color="var(--p)">Physics</button>
+        </div>
+        <div class="cal-ch-list" id="calChList"></div>
+      </div>
+      <div class="cal-save-bar">
+        <button class="cal-reset-btn" onclick="resetSubjSchedule()">Reset to default</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cal-save-msg" id="calSaveMsg">Saved</span>
+          <button class="cal-save-btn" onclick="saveSchedule()">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTS SECTION -->
+    <div class="cal-panel-section" id="calSec-tests">
+      <div class="cal-body">
+        <div class="cal-test-grid">
+          <!-- Mains Slider -->
+          <div class="cal-slider-card">
+            <div class="cal-slider-label">Mains tests / month</div>
+            <div class="cal-slider-val" id="mainsSliderVal">3</div>
+            <div class="cal-slider-sub" id="mainsSliderSub">3 per month — weeks 1, 2, 3</div>
+            <div class="cal-slider-track" id="mainsTrack" onclick="sliderClick(event,'mains')">
+              <div class="cal-slider-fill cal-slider-fill-mains" id="mainsFill" style="width:37.5%">
+                <div class="cal-slider-thumb cal-slider-thumb-mains" id="mainsThumb"></div>
+              </div>
+            </div>
+            <div class="cal-slider-ticks">
+              <span class="cal-slider-tick" id="mainsT0">0</span>
+              <span class="cal-slider-tick" id="mainsT1">1</span>
+              <span class="cal-slider-tick" id="mainsT2">2</span>
+              <span class="cal-slider-tick" id="mainsT3">3</span>
+              <span class="cal-slider-tick" id="mainsT4">4</span>
+              <span class="cal-slider-tick" id="mainsT5">5</span>
+              <span class="cal-slider-tick" id="mainsT6">6</span>
+              <span class="cal-slider-tick" id="mainsT7">7</span>
+              <span class="cal-slider-tick" id="mainsT8">8</span>
+            </div>
+          </div>
+          <!-- Advanced Slider -->
+          <div class="cal-slider-card">
+            <div class="cal-slider-label">Advanced tests / month</div>
+            <div class="cal-slider-val" id="advSliderVal">1</div>
+            <div class="cal-slider-sub" id="advSliderSub">1 per month — last free Sunday</div>
+            <div class="cal-slider-track" id="advTrack" onclick="sliderClick(event,'adv')">
+              <div class="cal-slider-fill cal-slider-fill-adv" id="advFill" style="width:25%">
+                <div class="cal-slider-thumb cal-slider-thumb-adv" id="advThumb"></div>
+              </div>
+            </div>
+            <div class="cal-slider-ticks">
+              <span class="cal-slider-tick" id="advT0">0</span>
+              <span class="cal-slider-tick" id="advT1">1</span>
+              <span class="cal-slider-tick" id="advT2">2</span>
+              <span class="cal-slider-tick" id="advT3">3</span>
+              <span class="cal-slider-tick" id="advT4">4</span>
+            </div>
+          </div>
+        </div>
+        <div class="cal-schedule-preview">
+          <div class="cal-schedule-title">Schedule preview</div>
+          <div id="calTestPreview"></div>
+        </div>
+      </div>
+      <div class="cal-save-bar">
+        <button class="cal-reset-btn" onclick="resetTestSchedule()">Reset to default</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cal-save-msg" id="calTestSaveMsg">Saved</span>
+          <button class="cal-save-btn" onclick="saveTestSchedule()">Apply</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- SIGNATURE LOGO -->
 <div id="sigWrap" style="position:fixed;bottom:24px;right:24px;z-index:9000;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
   <!-- Popup card — display controlled by JS -->
@@ -1781,23 +2194,32 @@ function hmDayClick(el,dateKey,chapters){
     ">slut saint</a>
     <div style="font-size:9px;color:var(--t3);letter-spacing:.04em;opacity:.6;font-family:'JetBrains Mono',monospace;">independent developer</div>
   </div>
-  <!-- Logo button -->
+  <!-- Logo button — diamond shape -->
   <button id="sigBtn" onclick="toggleSig(event)" title="About" style="
-    width:34px;height:34px;border-radius:50%;border:1px solid var(--b2);
-    background:var(--s1);cursor:pointer;display:flex;align-items:center;justify-content:center;
-    transition:all .3s cubic-bezier(.16,1,.3,1);position:relative;
-  " onmouseenter="this.style.borderColor='rgba(255,255,255,0.26)';this.style.boxShadow='0 0 18px rgba(228,228,231,0.09)';this.style.background='var(--s2)'"
-     onmouseleave="this.style.borderColor='var(--b2)';this.style.boxShadow='none';this.style.background='var(--s1)'">
-    <!-- Clean minimal diamond/node icon -->
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <circle cx="6.5" cy="6.5" r="2.5" stroke="rgba(228,228,231,0.65)" stroke-width="1.2"/>
-      <circle cx="6.5" cy="6.5" r="5.5" stroke="rgba(228,228,231,0.18)" stroke-width="1" stroke-dasharray="2.5 2.5"/>
+    width:34px;height:34px;border:none;background:transparent;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .3s cubic-bezier(.16,1,.3,1);position:relative;padding:0;
+  ">
+    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" id="sigBtnSvg" style="transition:all .3s cubic-bezier(.16,1,.3,1);">
+      <!-- Diamond (square rotated 45°) -->
+      <rect x="6" y="6" width="22" height="22" rx="3" ry="3"
+        transform="rotate(45 17 17)"
+        stroke="rgba(228,228,231,0.2)" stroke-width="1" fill="rgba(10,10,12,0.9)"/>
+      <!-- Inner mark — a minimal "f" node: small square + dot -->
+      <rect x="14" y="14" width="3" height="3" rx="0.5"
+        fill="rgba(228,228,231,0.55)"/>
+      <rect x="18.5" y="17" width="1.5" height="1.5" rx="0.3"
+        fill="rgba(228,228,231,0.3)"/>
+      <rect x="14" y="18.5" width="1.5" height="1.5" rx="0.3"
+        fill="rgba(228,228,231,0.3)"/>
     </svg>
   </button>
 </div>
 
 <style>
 #sigName:hover{color:var(--m);text-shadow:0 0 20px rgba(194,163,89,0.35);}
+#sigBtn:hover #sigBtnSvg rect:first-child{stroke:rgba(228,228,231,0.4);}
+#sigBtn:hover{filter:drop-shadow(0 0 10px rgba(228,228,231,0.08));}
 </style>
 
 <script>
@@ -1820,6 +2242,818 @@ document.addEventListener('click',function(e){
     sigOpen=false;
   }
 });
+
+
+/* ═══════════════════════════════════════════════
+   CALIBRATE SYSTEM
+═══════════════════════════════════════════════ */
+
+// ── Default data clones ──
+const MATH_DEFAULT = JSON.parse(JSON.stringify(MATH));
+const CHEM_DEFAULT = JSON.parse(JSON.stringify(CHEM));
+const PHYS_DEFAULT = JSON.parse(JSON.stringify(PHYS));
+
+// ── Calibrate state ──
+let calActiveSubj = 'math';
+let calDraftSchedule = {}; // {math:[...], chem:[...], phys:[...]}
+let calMainsPerMonth = 3;
+let calAdvPerMonth = 1;
+let dragSrc = null;
+let dragSrcIdx = -1;
+
+const CAL_KEY = 'fent_cal_v1';
+const MONTH_DAYS = [31,28,29,31,30,31,30,31,31,30,31,31]; // 2026: not leap (Feb has 28 days in 2026... actually 2026 not leap, but Mar has 31)
+// Correct: 2026 is not a leap year
+const MONTH_DAYS_2026 = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+function getSubjData(s){return s==='math'?MATH:s==='chem'?CHEM:PHYS;}
+function getDefaultData(s){return s==='math'?MATH_DEFAULT:s==='chem'?CHEM_DEFAULT:PHYS_DEFAULT;}
+
+// Load saved calibration
+function loadCalibration(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CAL_KEY)||'{}');
+    // Restore full arrays (preserves custom order from drag-reorder)
+    if(saved.math && saved.math.length === MATH_DEFAULT.length){
+      MATH.length = 0;
+      saved.math.forEach(ch => MATH.push({...ch}));
+    }
+    if(saved.chem && saved.chem.length === CHEM_DEFAULT.length){
+      CHEM.length = 0;
+      saved.chem.forEach(ch => CHEM.push({...ch}));
+    }
+    if(saved.phys && saved.phys.length === PHYS_DEFAULT.length){
+      PHYS.length = 0;
+      saved.phys.forEach(ch => PHYS.push({...ch}));
+    }
+    // Test counts
+    if(typeof saved.mainsPerMonth === 'number') calMainsPerMonth = Math.min(8, Math.max(0, saved.mainsPerMonth));
+    if(typeof saved.advPerMonth === 'number') calAdvPerMonth = Math.min(4, Math.max(0, saved.advPerMonth));
+  } catch(e){}
+}
+
+function saveCalibration(){
+  try{
+    const data = {
+      math: MATH.map(ch=>({n:ch.n,name:ch.name,s:ch.s,e:ch.e})),
+      chem: CHEM.map(ch=>({n:ch.n,name:ch.name,s:ch.s,e:ch.e})),
+      phys: PHYS.map(ch=>({n:ch.n,name:ch.name,s:ch.s,e:ch.e})),
+      mainsPerMonth: calMainsPerMonth,
+      advPerMonth: calAdvPerMonth
+    };
+    localStorage.setItem(CAL_KEY, JSON.stringify(data));
+  } catch(e){}
+}
+
+// Open / Close
+function openCalibrate(){
+  const overlay = document.getElementById('calOverlay');
+  overlay.classList.remove('hidden');
+  // Deep clone current data for drafting
+  calDraftSchedule = {
+    math: MATH.map(ch=>({...ch})),
+    chem: CHEM.map(ch=>({...ch})),
+    phys: PHYS.map(ch=>({...ch}))
+  };
+  calActiveSubj = 'math';
+  // Reset tab state
+  document.querySelectorAll('.cal-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelector('.cal-tab').classList.add('on');
+  document.querySelectorAll('.cal-panel-section').forEach(s=>s.classList.remove('on'));
+  document.getElementById('calSec-schedule').classList.add('on');
+  // Reset subj tabs
+  document.querySelectorAll('.cal-subj-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelector('.cal-subj-tab').classList.add('on');
+  renderCalChList();
+  document.body.style.overflow='hidden';
+}
+
+function closeCalibrate(){
+  document.getElementById('calOverlay').classList.add('hidden');
+  document.body.style.overflow='';
+}
+
+// Click outside panel to close
+document.addEventListener('click', function(e){
+  const overlay = document.getElementById('calOverlay');
+  if(!overlay.classList.contains('hidden') && e.target === overlay){
+    closeCalibrate();
+  }
+});
+// ESC key to close
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(!document.getElementById('calOverlay').classList.contains('hidden')){
+      closeCalibrate();
+    }
+  }
+});
+
+
+// Tab switch
+function calTab(section, btn){
+  document.querySelectorAll('.cal-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.cal-panel-section').forEach(s=>s.classList.remove('on'));
+  document.getElementById('calSec-'+section).classList.add('on');
+  if(section==='tests'){
+    renderTestSliders();
+    renderTestPreview();
+  }
+}
+
+// Subject switch
+function calSubj(s, btn){
+  calActiveSubj = s;
+  document.querySelectorAll('.cal-subj-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  renderCalChList();
+}
+
+/* ── TRACKER RANGE ──
+   Returns {start: Date, end: Date} — the earliest chapter start
+   and latest chapter end across ALL subjects, live from current data.
+   This is the single source of truth for every date-range in the app. */
+function getTrackerRange(){
+  const all = [...MATH, ...CHEM, ...PHYS];
+  if(!all.length) return {start: new Date(2026,3,13), end: new Date(2026,9,14)};
+  const starts = all.map(ch => parseDate(ch.s));
+  const ends   = all.map(ch => parseDate(ch.e));
+  const start  = new Date(Math.min(...starts.map(d=>d.getTime())));
+  const end    = new Date(Math.max(...ends.map(d=>d.getTime())));
+  start.setHours(0,0,0,0);
+  end.setHours(0,0,0,0);
+  return {start, end};
+}
+
+/* ── DATE UTILS ── */
+function parseDateStr(str){
+  // "13 Apr" → {day:13, mon:'Apr', monIdx:3}
+  const parts = str.trim().split(' ');
+  const day = parseInt(parts[0]);
+  const mon = parts[1];
+  const monIdx = MMAP[mon];
+  return {day, mon, monIdx};
+}
+
+function makeDateStr(day, monIdx){
+  const m = MONTHS[monIdx];
+  return day + ' ' + m;
+}
+
+function clampDay(day, monIdx){
+  const maxDay = MONTH_DAYS_2026[monIdx] || 30;
+  return Math.max(1, Math.min(maxDay, day));
+}
+
+function addDays(day, monIdx, n){
+  // Add n days to date, return {day, monIdx}
+  let d = new Date(2026, monIdx, day);
+  d.setDate(d.getDate() + n);
+  // Clamp to Dec 31 2026 max — prevent year rollover producing "1 Jan" which
+  // would be mis-parsed as Jan 2026 (before the tracker start), breaking getTrackerRange.
+  if(d.getFullYear() > 2026){
+    return {day: 31, monIdx: 11}; // Dec 31
+  }
+  return {day: d.getDate(), monIdx: d.getMonth()};
+}
+
+/* ── RENDER CHAPTER LIST ── */
+function renderCalChList(){
+  const list = document.getElementById('calChList');
+  const arr = calDraftSchedule[calActiveSubj];
+  
+  list.innerHTML = arr.map((ch, i) => {
+    const s = parseDateStr(ch.s);
+    const e = parseDateStr(ch.e);
+    return `<div class="cal-ch-row" 
+      draggable="true"
+      data-idx="${i}"
+      id="calRow-${calActiveSubj}-${i}"
+      style="animation-delay:${i*12}ms"
+      ondragstart="dragStart(event,${i})"
+      ondragover="dragOver(event,${i})"
+      ondragleave="dragLeave(event,${i})"
+      ondrop="dropOn(event,${i})"
+      ondragend="dragEnd(event)">
+      <div class="cal-ch-handle">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="cal-ch-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="cal-ch-name" title="${ch.name}">${ch.name}</span>
+      <!-- Date groups — wrapped for mobile layout -->
+      <div class="cal-dates-wrap">
+      <!-- Start date -->
+      <div class="cal-date-grp">
+        <input class="cal-date-seg day-inp" type="text" inputmode="numeric" maxlength="2"
+          value="${s.day}" 
+          data-type="s" data-part="day" data-idx="${i}"
+          oninput="handleDayInput(this,'s',${i})"
+          onblur="commitDay(this,'s',${i})"
+          onfocus="this.select()">
+        <div class="cal-mon-wrap">
+          <button class="cal-mon-btn" onclick="shiftMonth('s',${i},-1)" title="prev month">‹</button>
+          <span class="cal-mon-name" id="calMonS-${calActiveSubj}-${i}">${s.mon}</span>
+          <button class="cal-mon-btn" onclick="shiftMonth('s',${i},1)" title="next month">›</button>
+        </div>
+      </div>
+      <span class="cal-date-arrow">→</span>
+      <!-- End date -->
+      <div class="cal-date-grp">
+        <input class="cal-date-seg day-inp" type="text" inputmode="numeric" maxlength="2"
+          value="${e.day}"
+          data-type="e" data-part="day" data-idx="${i}"
+          oninput="handleDayInput(this,'e',${i})"
+          onblur="commitDay(this,'e',${i})"
+          onfocus="this.select()">
+        <div class="cal-mon-wrap">
+          <button class="cal-mon-btn" onclick="shiftMonth('e',${i},-1)" title="prev month">‹</button>
+          <span class="cal-mon-name" id="calMonE-${calActiveSubj}-${i}">${e.mon}</span>
+          <button class="cal-mon-btn" onclick="shiftMonth('e',${i},1)" title="next month">›</button>
+        </div>
+      </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── DATE INPUT HANDLING ── */
+
+// Only strip non-numeric — don't clamp or propagate while typing
+function handleDayInput(inp, type, idx){
+  inp.value = inp.value.replace(/[^0-9]/g,'');
+}
+
+// On blur: clamp to valid day range, ensure start <= end
+function commitDay(inp, type, idx){
+  const arr = calDraftSchedule[calActiveSubj];
+  const ch = arr[idx];
+  let val = parseInt(inp.value);
+  if(isNaN(val) || val < 1) val = 1;
+  
+  const curDate = parseDateStr(type==='s' ? ch.s : ch.e);
+  val = clampDay(val, curDate.monIdx);
+  inp.value = val;
+  
+  if(type==='s'){
+    ch.s = makeDateStr(val, curDate.monIdx);
+    // Auto-set end date next chapter's start only if end is now before start
+    const eDate = parseDateStr(ch.e);
+    const sDate = parseDateStr(ch.s);
+    if(new Date(2026, eDate.monIdx, eDate.day) <= new Date(2026, sDate.monIdx, sDate.day)){
+      const newE = addDays(sDate.day, sDate.monIdx, 5);
+      ch.e = makeDateStr(newE.day, newE.monIdx);
+      refreshRowDates(idx);
+    }
+  } else {
+    ch.e = makeDateStr(val, curDate.monIdx);
+    // If end <= start, push end to start+1
+    const sDate = parseDateStr(ch.s);
+    const eDate = parseDateStr(ch.e);
+    if(new Date(2026, eDate.monIdx, eDate.day) <= new Date(2026, sDate.monIdx, sDate.day)){
+      const newE = addDays(sDate.day, sDate.monIdx, 1);
+      ch.e = makeDateStr(newE.day, newE.monIdx);
+      refreshRowDates(idx);
+      // Smart: if this change makes next chapter's start invalid, auto-set next start
+      if(idx < arr.length - 1){
+        const nextCh = arr[idx+1];
+        const nextStart = parseDateStr(nextCh.s);
+        const thisEnd = parseDateStr(ch.e);
+        if(new Date(2026, nextStart.monIdx, nextStart.day) <= new Date(2026, thisEnd.monIdx, thisEnd.day)){
+          const ns = addDays(thisEnd.day, thisEnd.monIdx, 1);
+          nextCh.s = makeDateStr(ns.day, ns.monIdx);
+          refreshRowDates(idx+1);
+        }
+      }
+    }
+  }
+}
+
+// Month stepper — ‹/› buttons
+function shiftMonth(type, idx, delta){
+  const arr = calDraftSchedule[calActiveSubj];
+  const ch = arr[idx];
+  const cur = parseDateStr(type==='s' ? ch.s : ch.e);
+  let newMonIdx = cur.monIdx + delta;
+  // Clamp to Jan-Dec (0-11)
+  newMonIdx = Math.max(0, Math.min(11, newMonIdx));
+  // Clamp day to new month
+  const newDay = clampDay(cur.day, newMonIdx);
+  const newStr = makeDateStr(newDay, newMonIdx);
+  
+  if(type==='s'){
+    ch.s = newStr;
+    // If start >= end, push end forward
+    const eDate = parseDateStr(ch.e);
+    if(new Date(2026, newMonIdx, newDay) >= new Date(2026, eDate.monIdx, eDate.day)){
+      const newE = addDays(newDay, newMonIdx, 5);
+      ch.e = makeDateStr(newE.day, newE.monIdx);
+    }
+  } else {
+    ch.e = newStr;
+    // If end <= start, pull end to start+1
+    const sDate = parseDateStr(ch.s);
+    if(new Date(2026, newMonIdx, newDay) <= new Date(2026, sDate.monIdx, sDate.day)){
+      const newE = addDays(sDate.day, sDate.monIdx, 1);
+      ch.e = makeDateStr(newE.day, newE.monIdx);
+    }
+  }
+  refreshRowDates(idx);
+}
+
+function refreshRowDates(idx){
+  const arr = calDraftSchedule[calActiveSubj];
+  if(!arr[idx]) return;
+  const ch = arr[idx];
+  const row = document.getElementById('calRow-'+calActiveSubj+'-'+idx);
+  if(!row) return;
+  const dayInputs = row.querySelectorAll('.day-inp');
+  const s = parseDateStr(ch.s);
+  const e = parseDateStr(ch.e);
+  // Update day inputs (s, e)
+  if(dayInputs[0]) dayInputs[0].value = s.day;
+  if(dayInputs[1]) dayInputs[1].value = e.day;
+  // Update month display spans
+  const sMonEl = document.getElementById('calMonS-'+calActiveSubj+'-'+idx);
+  const eMonEl = document.getElementById('calMonE-'+calActiveSubj+'-'+idx);
+  if(sMonEl) sMonEl.textContent = s.mon;
+  if(eMonEl) eMonEl.textContent = e.mon;
+}
+
+/* ── DRAG & DROP — smooth, no blink ── */
+function dragStart(e, idx){
+  dragSrcIdx = idx;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', idx);
+}
+function dragOver(e, idx){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  if(idx !== dragSrcIdx){
+    document.getElementById('calRow-'+calActiveSubj+'-'+idx)?.classList.add('drag-over');
+  }
+}
+function dragLeave(e, idx){
+  document.getElementById('calRow-'+calActiveSubj+'-'+idx)?.classList.remove('drag-over');
+}
+function dropOn(e, idx){
+  e.preventDefault();
+  if(dragSrcIdx === idx || dragSrcIdx < 0) return;
+
+  const arr = calDraftSchedule[calActiveSubj];
+  const list = document.getElementById('calChList');
+
+  // 1. Reorder data array — do NOT renumber ch.n (it's the stable progress key)
+  const moved = arr.splice(dragSrcIdx, 1)[0];
+  arr.splice(idx, 0, moved);
+
+  // 2. Move DOM nodes without wiping innerHTML — no flash
+  const rows = [...list.querySelectorAll('.cal-ch-row')];
+  const srcNode = rows[dragSrcIdx];
+  const tgtNode = rows[idx];
+  if(!srcNode || !tgtNode) { renderCalChList(); return; }
+
+  if(dragSrcIdx < idx){
+    list.insertBefore(srcNode, tgtNode.nextSibling);
+  } else {
+    list.insertBefore(srcNode, tgtNode);
+  }
+
+  // 3. Update all index-dependent attributes silently
+  [...list.querySelectorAll('.cal-ch-row')].forEach((row, i) => {
+    row.dataset.idx = i;
+    row.id = 'calRow-'+calActiveSubj+'-'+i;
+    // Update num label
+    const numEl = row.querySelector('.cal-ch-num');
+    if(numEl) numEl.textContent = String(i+1).padStart(2,'0');
+    // Update all onclick handlers that embed idx
+    row.setAttribute('ondragstart', `dragStart(event,${i})`);
+    row.setAttribute('ondragover',  `dragOver(event,${i})`);
+    row.setAttribute('ondragleave', `dragLeave(event,${i})`);
+    row.setAttribute('ondrop',      `dropOn(event,${i})`);
+
+    // Update date field IDs and handlers
+    const dayInps = row.querySelectorAll('.day-inp');
+    const monNames = row.querySelectorAll('.cal-mon-name');
+    const monBtns  = row.querySelectorAll('.cal-mon-btn');
+    if(dayInps[0]){
+      dayInps[0].dataset.idx=i;
+      dayInps[0].setAttribute('oninput', `handleDayInput(this,'s',${i})`);
+      dayInps[0].setAttribute('onblur',  `commitDay(this,'s',${i})`);
+      dayInps[0].value = parseDateStr(arr[i].s).day;
+    }
+    if(dayInps[1]){
+      dayInps[1].dataset.idx=i;
+      dayInps[1].setAttribute('oninput', `handleDayInput(this,'e',${i})`);
+      dayInps[1].setAttribute('onblur',  `commitDay(this,'e',${i})`);
+      dayInps[1].value = parseDateStr(arr[i].e).day;
+    }
+    if(monNames[0]){
+      monNames[0].id = 'calMonS-'+calActiveSubj+'-'+i;
+      monNames[0].textContent = parseDateStr(arr[i].s).mon;
+    }
+    if(monNames[1]){
+      monNames[1].id = 'calMonE-'+calActiveSubj+'-'+i;
+      monNames[1].textContent = parseDateStr(arr[i].e).mon;
+    }
+    // Mon buttons
+    [0,1,2,3].forEach(bi => {
+      if(!monBtns[bi]) return;
+      const type = bi < 2 ? 's' : 'e';
+      const delta = (bi===0||bi===2) ? -1 : 1;
+      monBtns[bi].setAttribute('onclick', `shiftMonth('${type}',${i},${delta})`);
+    });
+  });
+
+  // Remove drag-over highlights
+  document.querySelectorAll('.cal-ch-row').forEach(r=>r.classList.remove('drag-over','dragging'));
+  dragSrcIdx = -1;
+}
+function dragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.cal-ch-row').forEach(r=>r.classList.remove('drag-over'));
+  dragSrcIdx = -1;
+}
+
+/* ── AUTO-SORT BY START DATE (FLIP animation) ── */
+function dateToTimestamp(dateStr){
+  // "13 Apr" → numeric timestamp for sorting
+  const {day, monIdx} = parseDateStr(dateStr);
+  // Use year 2026 as base; this is consistent with the whole app
+  return new Date(2026, monIdx, day).getTime();
+}
+
+function sortDraftByStartDate(subjKey){
+  const arr = calDraftSchedule[subjKey];
+  if(!arr || arr.length < 2) return false; // nothing to sort
+
+  // Record original order for comparison
+  const origOrder = arr.map(ch => ch.name);
+
+  // Stable sort: primary = start date, secondary = end date, tertiary = original index
+  arr.forEach((ch, i) => ch._origIdx = i); // tag with original index for stability
+  arr.sort((a, b) => {
+    const sa = dateToTimestamp(a.s);
+    const sb = dateToTimestamp(b.s);
+    if(sa !== sb) return sa - sb;
+    // Same start: sort by end date
+    const ea = dateToTimestamp(a.e);
+    const eb = dateToTimestamp(b.e);
+    if(ea !== eb) return ea - eb;
+    // Identical dates: preserve original order (stable)
+    return a._origIdx - b._origIdx;
+  });
+  // Clean up temp property
+  arr.forEach(ch => delete ch._origIdx);
+
+  // Check if anything actually moved
+  const newOrder = arr.map(ch => ch.name);
+  const reordered = origOrder.some((name, i) => name !== newOrder[i]);
+  return reordered;
+}
+
+/* FLIP animation helper — animates list rows smoothly to new positions */
+function animateSortedRows(){
+  const list = document.getElementById('calChList');
+  if(!list) return;
+
+  const rows = [...list.querySelectorAll('.cal-ch-row')];
+  // Step 1: Record FIRST positions
+  const firstRects = rows.map(r => r.getBoundingClientRect());
+  const rowByName = {};
+  rows.forEach((r, i) => {
+    // Use chapter name as key (from the .cal-ch-name span)
+    const nameEl = r.querySelector('.cal-ch-name');
+    if(nameEl) rowByName[nameEl.getAttribute('title') || nameEl.textContent.trim()] = { el: r, first: firstRects[i] };
+  });
+
+  // Step 2: Re-render list (DOM now reflects sorted order)
+  renderCalChList();
+
+  // Step 3: Record LAST positions + play animation
+  const newRows = [...list.querySelectorAll('.cal-ch-row')];
+  newRows.forEach(r => {
+    // Cancel the CSS entry animation so it doesn't conflict with FLIP
+    r.style.animation = 'none';
+    void r.getBoundingClientRect(); // force reflow to commit animation:none
+
+    const nameEl = r.querySelector('.cal-ch-name');
+    const name = nameEl ? (nameEl.getAttribute('title') || nameEl.textContent.trim()) : null;
+    const prev = name ? rowByName[name] : null;
+    if(!prev) return;
+
+    const last = r.getBoundingClientRect();
+    const dy = prev.first.top - last.top;
+    if(Math.abs(dy) < 1) return; // didn't move
+
+    // Invert: snap to where it was
+    r.style.transition = 'none';
+    r.style.transform = `translateY(${dy}px)`;
+    r.style.opacity = '0.7';
+
+    // Force reflow, then play to final position
+    r.getBoundingClientRect();
+    r.style.transition = 'transform 380ms cubic-bezier(0.16,1,0.3,1), opacity 200ms ease';
+    r.style.transform = 'translateY(0)';
+    r.style.opacity = '1';
+
+    // Clean up after animation
+    r.addEventListener('transitionend', () => {
+      r.style.transition = '';
+      r.style.transform = '';
+      r.style.opacity = '';
+      r.style.animation = ''; // restore normal animation capability
+    }, { once: true });
+  });
+}
+
+/* ── SAVE SCHEDULE ── */
+function saveSchedule(){
+  // Auto-sort chapters by ascending start date (stable sort)
+  const wasReordered = sortDraftByStartDate(calActiveSubj);
+
+  // If chapters moved, animate them sliding to new positions
+  if(wasReordered){
+    animateSortedRows();
+    // Brief "reordered" indicator
+    const msg = document.getElementById('calSaveMsg');
+    msg.textContent = 'Sorted & saved ✓';
+    msg.classList.add('visible');
+    setTimeout(()=>{ msg.classList.remove('visible'); msg.textContent = 'Saved ✓'; }, 2200);
+  } else {
+    const msg = document.getElementById('calSaveMsg');
+    msg.textContent = 'Saved ✓';
+    msg.classList.add('visible');
+    setTimeout(()=>msg.classList.remove('visible'), 2000);
+  }
+
+  const arr = calDraftSchedule[calActiveSubj];
+  const target = calActiveSubj==='math'?MATH:calActiveSubj==='chem'?CHEM:PHYS;
+  arr.forEach((ch,i) => {
+    target[i].name = ch.name;
+    target[i].s = ch.s;
+    target[i].e = ch.e;
+    target[i].n = ch.n; // NEVER renumber n — it is the stable progress key (ST['math_N'])
+  });
+  saveCalibration();
+  // Refresh UI
+  refreshAllLists();
+  stats();
+  renderPulse();
+}
+
+function resetSubjSchedule(){
+  const defaults = getDefaultData(calActiveSubj);
+  calDraftSchedule[calActiveSubj] = defaults.map(ch=>({...ch}));
+  renderCalChList();
+}
+
+function refreshAllLists(){
+  document.getElementById('listM').innerHTML=MATH.map((ch,i)=>card('math',ch,i)).join('');
+  document.getElementById('listC').innerHTML=CHEM.map((ch,i)=>card('chem',ch,i)).join('');
+  document.getElementById('listP').innerHTML=PHYS.map((ch,i)=>card('phys',ch,i)).join('');
+}
+
+/* ═══ TEST SCHEDULE BUILDER ═══ */
+function buildCustomTestSchedule(){
+  const tests = [];
+  // Derive month range from actual chapter dates — no hardcoding
+  const {start: tStart, end: tEnd} = getTrackerRange();
+
+  // Collect every calendar month that overlaps the tracker window
+  const months = [];
+  const ptr = new Date(tStart.getFullYear(), tStart.getMonth(), 1);
+  while(ptr <= tEnd){
+    months.push({
+      y: ptr.getFullYear(),
+      m: ptr.getMonth(),
+      label: MONTHS[ptr.getMonth()]
+    });
+    ptr.setMonth(ptr.getMonth()+1);
+  }
+
+  months.forEach(({y, m, label}, mi) => {
+    const sundays = [];
+    const d = new Date(y, m, 1);
+    while(d.getMonth() === m){
+      // Only include Sundays that fall within the tracker window
+      if(d.getDay() === 0 && d >= tStart && d <= tEnd) sundays.push(new Date(d));
+      d.setDate(d.getDate()+1);
+    }
+    if(!sundays.length) return;
+
+    const occupied = new Array(sundays.length).fill(false);
+    const mainCount = Math.min(calMainsPerMonth, sundays.length);
+    let mainsAssigned = 0;
+    for(let i = 0; i < sundays.length && mainsAssigned < mainCount; i++){
+      // Use date-based ID: m_YYYY_MM_N — stable even if tracker range shifts
+      const sd = sundays[i];
+      const testId = `m_${sd.getFullYear()}_${sd.getMonth()}_${mainsAssigned}`;
+      tests.push({id:testId,name:`Mains ${label} #${mainsAssigned+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
+      occupied[i] = true;
+      mainsAssigned++;
+    }
+    const advCount = Math.min(calAdvPerMonth, sundays.length);
+    let advAssigned = 0;
+    for(let i = 0; i < sundays.length && advAssigned < advCount; i++){
+      if(!occupied[i]){
+        const sd = sundays[i];
+        const testId = `a_${sd.getFullYear()}_${sd.getMonth()}_${advAssigned}`;
+        tests.push({id:testId,name:`Advanced ${label} #${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
+        occupied[i] = true;
+        advAssigned++;
+      }
+    }
+    // If all Sundays taken by mains and still need adv, wrap to first Sunday
+    if(advAssigned < advCount){
+      for(let i = 0; i < sundays.length && advAssigned < advCount; i++){
+        const sd = sundays[i];
+        const testId = `a_${sd.getFullYear()}_${sd.getMonth()}_${advAssigned}`;
+        tests.push({id:testId,name:`Advanced ${label} #${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
+        advAssigned++;
+      }
+    }
+  });
+  tests.sort((a,b)=>a.date-b.date);
+  return tests;
+}
+
+/* ── SLIDER RENDERING ── */
+function renderTestSliders(){
+  updateSliderUI('mains', calMainsPerMonth);
+  updateSliderUI('adv', calAdvPerMonth);
+}
+
+function updateSliderUI(type, val){
+  const max = type==='mains'?8:4;
+  const pct = (val/max)*100;
+  
+  document.getElementById(type==='mains'?'mainsSliderVal':'advSliderVal').textContent = val;
+  document.getElementById(type==='mains'?'mainsFill':'advFill').style.width = pct+'%';
+  
+  // Sub text
+  const subEl = document.getElementById(type==='mains'?'mainsSliderSub':'advSliderSub');
+  if(val === 0){
+    subEl.textContent = 'No tests this month';
+  } else if(type==='mains'){
+    const weekNames = ['week 1','week 2','week 3','week 4','week 5','week 6','week 7','week 8'];
+    subEl.textContent = val+' per month — '+weekNames.slice(0,val).join(', ');
+  } else {
+    subEl.textContent = val+' per month — first available Sunday'+( val>1?'s':'');
+  }
+  
+  // Update tick highlights
+  for(let i=0;i<=max;i++){
+    const tick = document.getElementById((type==='mains'?'mainsT':'advT')+i);
+    if(tick) tick.classList.toggle('active', i===val);
+  }
+}
+
+function sliderClick(e, type){
+  const track = e.currentTarget;
+  const rect = track.getBoundingClientRect();
+  const max = type==='mains'?8:4;
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const val = Math.round(ratio * max);
+  
+  if(type==='mains') calMainsPerMonth = val;
+  else calAdvPerMonth = val;
+  
+  updateSliderUI(type, val);
+  renderTestPreview();
+}
+
+// Drag slider
+(function(){
+  let draggingSlider = null;
+  document.addEventListener('mousedown', e=>{
+    const thumb = e.target.closest('.cal-slider-thumb');
+    if(thumb){
+      const type = thumb.id==='mainsThumb'?'mains':'adv';
+      draggingSlider = type;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!draggingSlider) return;
+    const track = document.getElementById(draggingSlider==='mains'?'mainsTrack':'advTrack');
+    const rect = track.getBoundingClientRect();
+    const max = draggingSlider==='mains'?8:4;
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const val = Math.round(ratio * max);
+    if(draggingSlider==='mains') calMainsPerMonth = val;
+    else calAdvPerMonth = val;
+    updateSliderUI(draggingSlider, val);
+    renderTestPreview();
+  });
+  document.addEventListener('mouseup', ()=>{ draggingSlider=null; });
+  // Touch support
+  document.addEventListener('touchstart', e=>{
+    const thumb = e.target.closest('.cal-slider-thumb');
+    if(thumb){
+      const type = thumb.id==='mainsThumb'?'mains':'adv';
+      draggingSlider = type;
+    }
+  },{passive:true});
+  document.addEventListener('touchmove', e=>{
+    if(!draggingSlider) return;
+    const track = document.getElementById(draggingSlider==='mains'?'mainsTrack':'advTrack');
+    const rect = track.getBoundingClientRect();
+    const max = draggingSlider==='mains'?8:4;
+    const touch = e.touches[0];
+    const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+    const val = Math.round(ratio * max);
+    if(draggingSlider==='mains') calMainsPerMonth = val;
+    else calAdvPerMonth = val;
+    updateSliderUI(draggingSlider, val);
+    renderTestPreview();
+  },{passive:true});
+  document.addEventListener('touchend', ()=>{ draggingSlider=null; });
+})();
+
+/* ── TEST PREVIEW ── */
+function renderTestPreview(){
+  const preview = document.getElementById('calTestPreview');
+  const previewTests = buildCustomTestSchedule();
+  
+  if(previewTests.length === 0){
+    preview.innerHTML = '<div style="font-size:11px;color:var(--t3);text-align:center;padding:16px 0;">No tests scheduled with current settings.</div>';
+    return;
+  }
+  
+  // Group by month
+  const groups = {};
+  const monthOrder = [];
+  previewTests.forEach(t => {
+    if(!groups[t.month]){groups[t.month]=[];monthOrder.push(t.month);}
+    groups[t.month].push(t);
+  });
+  
+  const cards = monthOrder.map(month => {
+    const tests = groups[month];
+    const rows = tests.map(t => {
+      const label = t.type === 'mains' ? 'Mains' : 'Advanced';
+      const dateStr = fmtDate(t.date);
+      return `<div class="cal-sched-test-row">
+        <div class="cal-sched-test-dot ${t.type}"></div>
+        <div class="cal-sched-test-info">
+          <span class="cal-sched-test-label">${label}</span>
+          <span class="cal-sched-test-date">${dateStr}</span>
+        </div>
+      </div>`;
+    }).join('');
+    
+    return `<div class="cal-sched-month-card">
+      <div class="cal-sched-month-name">${month}</div>
+      <div class="cal-sched-month-rows">${rows || '<span class="cal-sched-empty">—</span>'}</div>
+    </div>`;
+  }).join('');
+  
+  preview.innerHTML = `<div class="cal-sched-grid">${cards}</div>`;
+}
+
+/* ── SAVE TEST SCHEDULE ── */
+function saveTestSchedule(){
+  saveCalibration();
+  // Rebuild TESTS global
+  const newTests = buildCustomTestSchedule();
+  TESTS.length = 0;
+  newTests.forEach(t => TESTS.push(t));
+  
+  const msg = document.getElementById('calTestSaveMsg');
+  msg.classList.add('visible');
+  setTimeout(()=>msg.classList.remove('visible'), 2000);
+  
+  // Refresh UI
+  stats();
+  if(document.getElementById('p-tests').classList.contains('on')) renderTests();
+  if(document.getElementById('p-overview').classList.contains('on')) renderPulse();
+  if(document.getElementById('p-ana').classList.contains('on')){ renderAnalytics(); renderDeckAndLog(); }
+}
+
+function resetTestSchedule(){
+  calMainsPerMonth = 3;
+  calAdvPerMonth = 1;
+  renderTestSliders();
+  renderTestPreview();
+}
+
+// ── INIT (must run after all functions defined) ──
+loadCalibration();
+(function(){
+  const newTests = buildCustomTestSchedule();
+  TESTS.length = 0;
+  newTests.forEach(t => TESTS.push(t));
+})();
+(function(){
+  document.getElementById('listM').innerHTML=MATH.map((ch,i)=>card('math',ch,i)).join('');
+  document.getElementById('listC').innerHTML=CHEM.map((ch,i)=>card('chem',ch,i)).join('');
+  document.getElementById('listP').innerHTML=PHYS.map((ch,i)=>card('phys',ch,i)).join('');
+  stats();
+  renderPulse();
+})();
+
 </script>
 
 </body>
