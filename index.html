@@ -644,7 +644,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @media(max-width:480px){
 
   /* Shell */
-  .shell{padding:32px 16px 100px;position:relative;}
+  .shell{padding:32px 16px 100px;}
 
   /* Header */
   .top{margin-bottom:32px;gap:10px;}
@@ -684,11 +684,16 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .track-stat-item{padding:0 10px;}
   .track-stat-num{font-size:18px;}
 
-  /* Settings button — no longer floating on mobile; sits inside shell header */
+  /* Settings button — move to bottom-right on mobile, away from header score */
   .settings-btn{
-    position:absolute;   /* anchored to .shell, scrolls with page */
-    top:32px;right:16px;
-    width:30px;height:30px;
+    position:fixed;
+    top:auto;
+    bottom:24px;
+    right:16px;
+    width:36px;height:36px;
+    /* slightly more opaque so it reads against page content */
+    background:var(--s2);
+    border-color:var(--b2);
   }
 
   /* About/sig button — hide on mobile (not needed, avoids visual clutter) */
@@ -745,8 +750,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .cal-head{padding:14px 12px;}
   .cal-tabs{padding:0 12px;}
   .cal-save-bar{padding:10px 12px;}
-  /* Align settings button to reduced padding */
-  .settings-btn{top:28px;right:12px;}
+  .settings-btn{bottom:20px;right:12px;}
 }
 .cal-sched-month-card{background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:12px;transition:border-color .2s;}
 .cal-sched-month-card:hover{border-color:var(--b2);}
