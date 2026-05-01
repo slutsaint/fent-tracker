@@ -684,14 +684,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .track-stat-item{padding:0 10px;}
   .track-stat-num{font-size:18px;}
 
-  /* Settings button — move to bottom-right on mobile, away from header score */
+  /* Settings button — fixed top-right, sits in the shell top-padding zone above the header */
   .settings-btn{
     position:fixed;
-    top:auto;
-    bottom:24px;
+    top:14px;
     right:16px;
-    width:36px;height:36px;
-    /* slightly more opaque so it reads against page content */
+    bottom:auto;
+    width:30px;height:30px;
     background:var(--s2);
     border-color:var(--b2);
   }
@@ -750,7 +749,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .cal-head{padding:14px 12px;}
   .cal-tabs{padding:0 12px;}
   .cal-save-bar{padding:10px 12px;}
-  .settings-btn{bottom:20px;right:12px;}
+  .settings-btn{top:12px;right:12px;}
 }
 .cal-sched-month-card{background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:12px;transition:border-color .2s;}
 .cal-sched-month-card:hover{border-color:var(--b2);}
