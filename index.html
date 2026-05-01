@@ -684,20 +684,27 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .track-stat-item{padding:0 10px;}
   .track-stat-num{font-size:18px;}
 
-  /* Settings button — sits just below the header row, right-aligned, in the margin gap before tabs.
-     Completely clear of both the brand name and the score block. Scrolls with page. */
-  .top{position:relative;}
+  /* Settings button — pulled into the .top flex row as a natural 3rd item.
+     Brand (left) | Settings (center, auto margins) | Score (right).
+     position:static so it scrolls with the page and never floats or collides. */
+  .top{
+    position:static;
+    align-items:center;
+  }
   .settings-btn{
-    position:absolute;
-    top:calc(100% + 8px);
-    right:0;
-    bottom:auto;
+    position:static;
+    order:1;           /* sits between brand (order:0 default) and score (order:2) */
+    margin:0 auto;     /* equal spacing left and right — perfectly centred in gap */
     width:32px;height:32px;
     background:var(--s2);
     border-color:var(--b2);
   }
-  /* No padding-right needed — button is no longer beside the score */
-  .master-side{padding-right:0;}
+  .master-side{
+    order:2;
+    padding-right:0;
+    text-align:right;
+  }
+  /* Brand stays order:0 (default) */
 
   /* About/sig button — hide on mobile (not needed, avoids visual clutter) */
   #sigWrap{display:none !important;}
@@ -753,7 +760,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .cal-head{padding:14px 12px;}
   .cal-tabs{padding:0 12px;}
   .cal-save-bar{padding:10px 12px;}
-  .settings-btn{width:26px;height:26px;}
+  .settings-btn{width:28px;height:28px;}
 }
 .cal-sched-month-card{background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:12px;transition:border-color .2s;}
 .cal-sched-month-card:hover{border-color:var(--b2);}
