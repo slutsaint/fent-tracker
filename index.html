@@ -94,28 +94,28 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .fs:focus{border-color:var(--b2);background:var(--s1)}
 
 /* ─── CHAPTER LIST ─── */
-.cl{display:flex;flex-direction:column;gap:4px}
+.cl{display:flex;flex-direction:column;gap:2px}
 .ch{background:var(--s1);border-radius:var(--r);overflow:hidden;transition:all .2s var(--ease);border:1px solid var(--b1)}
 .ch:hover{border-color:var(--b2);background:var(--s2)}
 .ch.open{border-color:var(--b2);background:var(--s2)}
-.ch-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;}
-.ch-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);width:20px;text-align:right;flex-shrink:0; font-weight:300;}
-.ch-nm{flex:1;font-size:13px;font-weight:400;color:var(--t1);letter-spacing:-.01em;}
-.ch-dt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);white-space:nowrap; font-weight:300;}
-.ch-ct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);width:28px;text-align:right; font-weight:300;}
-.ch-ar{color:var(--t3);font-size:8px;margin-left:4px;transition:transform .3s var(--ease);flex-shrink:0}
+.ch-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;}
+.ch-n{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);width:18px;text-align:right;flex-shrink:0;font-weight:300;}
+.ch-nm{flex:1;font-size:12px;font-weight:400;color:var(--t1);letter-spacing:-.01em;}
+.ch-dt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);white-space:nowrap;font-weight:300;}
+.ch-ct{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);width:24px;text-align:right;font-weight:300;}
+.ch-ar{color:var(--t3);font-size:7px;margin-left:2px;transition:transform .3s var(--ease);flex-shrink:0}
 .ch.open .ch-ar{transform:rotate(180deg)}
 .ch.done-ch .ch-nm{color:var(--t3);text-decoration:line-through;}
 .ch.done-ch .ch-ct{color:var(--done)}
 .ch{animation:cardIn .4s var(--ease) backwards}
 
 /* ─── TASK GRID ─── */
-.tg{display:none;padding:2px 16px 16px;grid-template-columns:1fr 1fr}
-.ch.open .tg{display:grid;gap:6px;animation:slideDown .3s var(--ease) backwards}
-.tk{display:flex;align-items:center;gap:10px;padding:10px 12px;background:transparent;border-radius:6px;cursor:pointer;transition:all .2s;border:1px solid var(--b1)}
-.tk:hover{background:var(--s2); border-color:var(--b2)}
+.tg{display:none;padding:2px 14px 12px;grid-template-columns:1fr 1fr}
+.ch.open .tg{display:grid;gap:4px;animation:slideDown .3s var(--ease) backwards}
+.tk{display:flex;align-items:center;gap:8px;padding:8px 10px;background:transparent;border-radius:5px;cursor:pointer;transition:all .2s;border:1px solid var(--b1)}
+.tk:hover{background:var(--s2);border-color:var(--b2)}
 .tk.on{background:var(--s3);border-color:transparent}
-.tb{width:12px;height:12px;border-radius:3px;border:1px solid var(--t3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;transition:all .2s var(--ease)}
+.tb{width:11px;height:11px;border-radius:2px;border:1px solid var(--t3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;transition:all .2s var(--ease)}
 
 /* Dynamic Box Colors */
 .tk.on[data-s="math"] .tb{border-color:var(--m);background:var(--m);color:var(--bg)}
@@ -123,7 +123,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .tk.on[data-s="phys"] .tb{border-color:var(--p);background:var(--p);color:var(--bg)}
 
 .tb.popping{animation:checkPop .3s var(--ease) both}
-.tl{font-size:12px;color:var(--t2);font-weight:400;}
+.tl{font-size:11px;color:var(--t2);font-weight:400;}
 .tk.on .tl{color:var(--t1)}
 
 /* ─── OVERVIEW TAB ─── */
@@ -197,20 +197,37 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .pulse-t-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3); font-weight:300;}
 
 /* ─── TESTS TAB ─── */
-.test-group{margin-bottom:32px}
-.test-group-label{margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--b1); font-size:10px; font-weight:500; color:var(--t2); text-transform:uppercase; letter-spacing:0.1em;}
-.test-list{display:flex;flex-direction:column;gap:4px}
-.test-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--s1);border-radius:var(--r);transition:all .2s var(--ease);border:1px solid var(--b1);cursor:pointer;animation:cardIn .3s var(--ease) backwards}
+.test-group{margin-bottom:24px}
+.test-group-label{
+  margin-bottom:8px;
+  font-size:9px;font-weight:500;color:var(--t3);
+  text-transform:uppercase;letter-spacing:0.14em;
+}
+.test-list{display:flex;flex-direction:column;gap:2px}
+.test-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:var(--s1);border-radius:var(--r);
+  transition:all .2s var(--ease);border:1px solid var(--b1);
+  cursor:pointer;animation:cardIn .3s var(--ease) backwards
+}
 .test-item:hover{background:var(--s2);border-color:var(--b2);}
-.test-item.done-test{background:var(--bg); opacity:0.6; cursor:default; pointer-events:none}
+.test-item.done-test{background:var(--bg);border-color:transparent;opacity:0.45;cursor:default;pointer-events:none}
+.test-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
 .test-dot.mains{background:var(--red)}
 .test-dot.adv{background:#ff8888}
-.test-name{flex:1;font-size:13px;font-weight:400;color:var(--t1);letter-spacing:-.01em}
-.test-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3); font-weight:300;}
-.test-type-badge{font-weight:400;font-size:9px;padding:2px 8px;border-radius:4px;letter-spacing:.05em;flex-shrink:0}
-.test-type-badge.mains{background:rgba(196,100,100,.1);color:var(--red); border:1px solid rgba(196,100,100,.2)}
-.test-type-badge.adv{background:rgba(255,136,136,.1);color:#ff8888; border:1px solid rgba(255,136,136,.2)}
-.test-score-badge{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t1); font-weight:300;}
+.test-name-wrap{flex:1;display:flex;align-items:baseline;gap:8px;min-width:0;}
+.test-name{font-size:12px;font-weight:400;color:var(--t1);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.test-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);font-weight:300;flex-shrink:0;}
+.test-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.test-type-badge{font-weight:400;font-size:8px;padding:2px 6px;border-radius:3px;letter-spacing:.06em;flex-shrink:0}
+.test-type-badge.mains{background:rgba(196,100,100,.07);color:var(--red);border:1px solid rgba(196,100,100,.15)}
+.test-type-badge.adv{background:rgba(255,136,136,.07);color:#ff8888;border:1px solid rgba(255,136,136,.15)}
+.test-score-badge{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--t1);font-weight:300;letter-spacing:.02em;
+}
+.test-pct{font-size:9px;font-weight:400;font-family:'JetBrains Mono',monospace;}
 .pct-good{color:var(--c)}
 .pct-mid{color:var(--m)}
 .pct-low{color:var(--red)}
@@ -616,7 +633,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @media(max-width:480px){
 
   /* Shell */
-  .shell{padding:32px 16px 100px;}
+  .shell{padding:32px 16px 100px;position:relative;}
 
   /* Header */
   .top{margin-bottom:32px;gap:10px;}
@@ -656,8 +673,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .track-stat-item{padding:0 10px;}
   .track-stat-num{font-size:18px;}
 
-  /* Settings button — smaller gap from edge */
-  .settings-btn{top:16px;right:16px;width:32px;height:32px;}
+  /* Settings button — no longer floating on mobile; sits inside shell header */
+  .settings-btn{
+    position:absolute;   /* anchored to .shell, scrolls with page */
+    top:32px;right:16px;
+    width:30px;height:30px;
+  }
+
+  /* About/sig button — hide on mobile (not needed, avoids visual clutter) */
+  #sigWrap{display:none !important;}
 
   /* Calibrate overlay */
   .cal-overlay{padding:12px 8px 32px;}
@@ -710,6 +734,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .cal-head{padding:14px 12px;}
   .cal-tabs{padding:0 12px;}
   .cal-save-bar{padding:10px 12px;}
+  /* Align settings button to reduced padding */
+  .settings-btn{top:28px;right:12px;}
 }
 .cal-sched-month-card{background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:12px;transition:border-color .2s;}
 .cal-sched-month-card:hover{border-color:var(--b2);}
@@ -875,11 +901,11 @@ function buildTestSchedule(){
     while(d.getMonth()===m){if(d.getDay()===0) sundays.push(new Date(d));d.setDate(d.getDate()+1);}
     for(let i=0;i<Math.min(3,sundays.length-1);i++){
       const sd=sundays[i];
-      tests.push({id:`m_${sd.getFullYear()}_${sd.getMonth()}_${i}`,name:`Mains Test ${i+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
+      tests.push({id:`m_${sd.getFullYear()}_${sd.getMonth()}_${i}`,name:`Mains ${i+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
     }
     if(sundays.length>=1){
       const sd=sundays[sundays.length-1];
-      tests.push({id:`a_${sd.getFullYear()}_${sd.getMonth()}_0`,name:`Advanced Test`,date:sundays[sundays.length-1],type:'adv',month:label,monthIdx:mi});
+      tests.push({id:`a_${sd.getFullYear()}_${sd.getMonth()}_0`,name:`Advanced 1`,date:sundays[sundays.length-1],type:'adv',month:label,monthIdx:mi});
     }
   });
   return tests;
@@ -1260,8 +1286,13 @@ function renderTests(){
 
   let html='';
   Object.entries(groups).forEach(([month,tests])=>{
-    html+=`<div class="test-group"><div class="test-group-label">${month} Block</div><div class="test-list">
-${tests.map((t,i)=>{
+    // Within each month: all Mains first (by date), then all Advanced (by date)
+    const sorted=[...tests].sort((a,b)=>{
+      if(a.type!==b.type) return a.type==='mains'?-1:1;
+      return a.date-b.date;
+    });
+    html+=`<div class="test-group"><div class="test-group-label">${month}</div><div class="test-list">
+${sorted.map((t,i)=>{
   const done=isTestDone(t.id);
   const sc=getTestScore(t.id);
   const total=t.type==='mains'?300:360;
@@ -1270,17 +1301,26 @@ ${tests.map((t,i)=>{
     const cls=pct>=70?'pct-good':pct>=50?'pct-mid':'pct-low';
     return `<div class="test-item done-test">
   <div class="test-dot ${t.type}"></div>
-  <span class="test-name">${t.name}</span>
-  <span class="test-date">${fmtFull(t.date)}</span>
-  <span class="test-score-badge">${sc.total}/${total} <span class="${cls}">[${pct}%]</span></span>
-  <span class="test-type-badge ${t.type}">${t.type==='adv'?'ADV':'MAINS'}</span>
+  <div class="test-name-wrap">
+    <span class="test-name">${t.name}</span>
+    <span class="test-date">${fmtDate(t.date)}</span>
+  </div>
+  <div class="test-right">
+    <span class="test-score-badge">${sc.total}<span style="color:var(--t3);font-size:9px;">/${total}</span></span>
+    <span class="test-pct ${cls}">${pct}%</span>
+    <span class="test-type-badge ${t.type}">${t.type==='adv'?'ADV':'MAINS'}</span>
+  </div>
 </div>`;
   }
   return `<div class="test-item" onclick="openTestModal('${t.id}')">
   <div class="test-dot ${t.type}"></div>
-  <span class="test-name">${t.name}</span>
-  <span class="test-date">${fmtFull(t.date)}</span>
-  <span class="test-type-badge ${t.type}">${t.type==='adv'?'ADV':'MAINS'}</span>
+  <div class="test-name-wrap">
+    <span class="test-name">${t.name}</span>
+    <span class="test-date">${fmtDate(t.date)}</span>
+  </div>
+  <div class="test-right">
+    <span class="test-type-badge ${t.type}">${t.type==='adv'?'ADV':'MAINS'}</span>
+  </div>
 </div>`;
 }).join('')}</div></div>`;
   });
@@ -2770,37 +2810,24 @@ function animateSortedRows(){
 
 /* ── SAVE SCHEDULE ── */
 function saveSchedule(){
-  // Auto-sort chapters by ascending start date (stable sort)
-  const wasReordered = sortDraftByStartDate(calActiveSubj);
-
-  // If chapters moved, animate them sliding to new positions
-  if(wasReordered){
-    animateSortedRows();
-    // Brief "reordered" indicator
-    const msg = document.getElementById('calSaveMsg');
-    msg.textContent = 'Sorted & saved ✓';
-    msg.classList.add('visible');
-    setTimeout(()=>{ msg.classList.remove('visible'); msg.textContent = 'Saved ✓'; }, 2200);
-  } else {
-    const msg = document.getElementById('calSaveMsg');
-    msg.textContent = 'Saved ✓';
-    msg.classList.add('visible');
-    setTimeout(()=>msg.classList.remove('visible'), 2000);
-  }
-
   const arr = calDraftSchedule[calActiveSubj];
   const target = calActiveSubj==='math'?MATH:calActiveSubj==='chem'?CHEM:PHYS;
-  arr.forEach((ch,i) => {
-    target[i].name = ch.name;
-    target[i].s = ch.s;
-    target[i].e = ch.e;
-    target[i].n = ch.n; // NEVER renumber n — it is the stable progress key (ST['math_N'])
-  });
+
+  // Replace target array contents in draft order — preserves user's drag-reorder
+  // NEVER change ch.n — it is the stable progress key (ST['math_N'])
+  target.length = 0;
+  arr.forEach(ch => target.push({...ch}));
+
   saveCalibration();
   // Refresh UI
   refreshAllLists();
   stats();
   renderPulse();
+
+  const msg = document.getElementById('calSaveMsg');
+  msg.textContent = 'Saved ✓';
+  msg.classList.add('visible');
+  setTimeout(()=>{ msg.classList.remove('visible'); }, 2000);
 }
 
 function resetSubjSchedule(){
@@ -2843,6 +2870,7 @@ function buildCustomTestSchedule(){
     }
     if(!sundays.length) return;
 
+    // Per-month counters — reset to 0 each month so names are "Mains 1", "Mains 2"… per month
     const occupied = new Array(sundays.length).fill(false);
     const mainCount = Math.min(calMainsPerMonth, sundays.length);
     let mainsAssigned = 0;
@@ -2850,7 +2878,7 @@ function buildCustomTestSchedule(){
       // Use date-based ID: m_YYYY_MM_N — stable even if tracker range shifts
       const sd = sundays[i];
       const testId = `m_${sd.getFullYear()}_${sd.getMonth()}_${mainsAssigned}`;
-      tests.push({id:testId,name:`Mains ${label} #${mainsAssigned+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
+      tests.push({id:testId,name:`Mains ${mainsAssigned+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
       occupied[i] = true;
       mainsAssigned++;
     }
@@ -2860,7 +2888,7 @@ function buildCustomTestSchedule(){
       if(!occupied[i]){
         const sd = sundays[i];
         const testId = `a_${sd.getFullYear()}_${sd.getMonth()}_${advAssigned}`;
-        tests.push({id:testId,name:`Advanced ${label} #${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
+        tests.push({id:testId,name:`Advanced ${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
         occupied[i] = true;
         advAssigned++;
       }
@@ -2870,7 +2898,7 @@ function buildCustomTestSchedule(){
       for(let i = 0; i < sundays.length && advAssigned < advCount; i++){
         const sd = sundays[i];
         const testId = `a_${sd.getFullYear()}_${sd.getMonth()}_${advAssigned}`;
-        tests.push({id:testId,name:`Advanced ${label} #${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
+        tests.push({id:testId,name:`Advanced ${advAssigned+1}`,date:sundays[i],type:'adv',month:label,monthIdx:mi});
         advAssigned++;
       }
     }
