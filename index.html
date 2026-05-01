@@ -47,6 +47,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @keyframes cbtRowIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes cbtShimmer{0%{left:-70%}100%{left:130%}}
 @keyframes cbtGlowPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+/* Previously missing — referenced by ch, test-item, ana-card; modal overlay; score total */
+@keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+@keyframes scoreReveal{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
 
 .shell{max-width:700px;margin:0 auto;padding:48px 24px 120px;animation:fadeUp .6s var(--ease) backwards}
 
@@ -189,6 +193,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .pulse-nav-center{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.05em; font-weight:300;}
 .pulse-empty-note{font-size:11px;font-weight:400;color:var(--t3);text-align:center;padding:24px 0;}
 
+/* Section sub-headers inside Overview box */
+.pulse-section-label{font-size:9px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px;}
+/* "Active" badge shown on current week */
+.pulse-today-badge{font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--c);background:rgba(107,158,131,.1);border:1px solid rgba(107,158,131,.2);border-radius:4px;padding:2px 7px;}
+
 /* Pulse Test Rows */
 .pulse-test-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-radius:var(--r);margin-bottom:6px; border:1px solid var(--b1)}
 .pulse-t-name{flex:1;font-size:13px;font-weight:400;color:var(--t1);letter-spacing:-.01em}
@@ -316,6 +325,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .analytics-grid, .aly-bottom-grid{grid-template-columns:1fr}
   .ana-card.full{grid-column:1}
   .tg{grid-template-columns:1fr}
+  /* Pulse inline task grid also needs 1-column on mobile */
+  .pulse-tasks-wrap .tg{grid-template-columns:1fr}
 }
 
 /* ─── NEW ANALYTICS SYSTEM ─── */
@@ -899,7 +910,7 @@ function buildTestSchedule(){
     const sundays=[];
     const d=new Date(2026,m,1);
     while(d.getMonth()===m){if(d.getDay()===0) sundays.push(new Date(d));d.setDate(d.getDate()+1);}
-    for(let i=0;i<Math.min(3,sundays.length-1);i++){
+    for(let i=0;i<Math.min(3,sundays.length);i++){
       const sd=sundays[i];
       tests.push({id:`m_${sd.getFullYear()}_${sd.getMonth()}_${i}`,name:`Mains ${i+1}`,date:sundays[i],type:'mains',month:label,monthIdx:mi});
     }
@@ -2313,19 +2324,20 @@ function getDefaultData(s){return s==='math'?MATH_DEFAULT:s==='chem'?CHEM_DEFAUL
 function loadCalibration(){
   try{
     const saved = JSON.parse(localStorage.getItem(CAL_KEY)||'{}');
-    // Restore full arrays (preserves custom order from drag-reorder)
-    if(saved.math && saved.math.length === MATH_DEFAULT.length){
-      MATH.length = 0;
-      saved.math.forEach(ch => MATH.push({...ch}));
-    }
-    if(saved.chem && saved.chem.length === CHEM_DEFAULT.length){
-      CHEM.length = 0;
-      saved.chem.forEach(ch => CHEM.push({...ch}));
-    }
-    if(saved.phys && saved.phys.length === PHYS_DEFAULT.length){
-      PHYS.length = 0;
-      saved.phys.forEach(ch => PHYS.push({...ch}));
-    }
+    // Restore arrays: validate each chapter by its stable n key matching the default.
+    // This is length-independent so drag-reorder survives future default data changes.
+    const restoreSubj = (saved_arr, live_arr, default_arr) => {
+      if(!saved_arr || !saved_arr.length) return;
+      // All saved n values must exist in the defaults
+      const validNs = new Set(default_arr.map(ch=>ch.n));
+      const allValid = saved_arr.every(ch => validNs.has(ch.n));
+      if(!allValid || saved_arr.length !== default_arr.length) return; // corrupt/mismatched — skip
+      live_arr.length = 0;
+      saved_arr.forEach(ch => live_arr.push({...ch}));
+    };
+    restoreSubj(saved.math, MATH, MATH_DEFAULT);
+    restoreSubj(saved.chem, CHEM, CHEM_DEFAULT);
+    restoreSubj(saved.phys, PHYS, PHYS_DEFAULT);
     // Test counts
     if(typeof saved.mainsPerMonth === 'number') calMainsPerMonth = Math.min(8, Math.max(0, saved.mainsPerMonth));
     if(typeof saved.advPerMonth === 'number') calAdvPerMonth = Math.min(4, Math.max(0, saved.advPerMonth));
@@ -2840,6 +2852,8 @@ function refreshAllLists(){
   document.getElementById('listM').innerHTML=MATH.map((ch,i)=>card('math',ch,i)).join('');
   document.getElementById('listC').innerHTML=CHEM.map((ch,i)=>card('chem',ch,i)).join('');
   document.getElementById('listP').innerHTML=PHYS.map((ch,i)=>card('phys',ch,i)).join('');
+  // Re-apply any active filters so state is preserved after calibration apply
+  ['math','chem','phys'].forEach(s=>applyF(s));
 }
 
 /* ═══ TEST SCHEDULE BUILDER ═══ */
