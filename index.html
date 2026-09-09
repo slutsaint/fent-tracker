@@ -5246,13 +5246,17 @@ function buildFocusActivitySections(today){
   function hmTaskColor(cell){
     if(!cell.inMonth) return 'rgba(255,255,255,0.0)';
     if(!cell.isPast&&!cell.isToday) return 'rgba(255,255,255,0.04)'; // future: muted
-    // A day only counts as "studied" if real logged time clears 10 minutes.
+    // A day only counts as "studied" if real elapsed time clears 10 minutes.
     // Below that, treat it exactly like zero — no partial-credit colour —
-    // so a stray few-minute tap can't paint a day as progress. Uses the
-    // actual focus-log seconds (real time), not the pomodoro session
-    // credit, since that's the only number that can't be inflated by a
-    // half-finished session getting rounded up.
-    const realMins = cell.focus && cell.focus.totalSecs ? cell.focus.totalSecs/60 : 0;
+    // so a stray few-minute tap can't paint a day as progress. Reads the
+    // dedicated real-seconds counter (fent_realsecs_), NOT the focus-log —
+    // the focus-log only gets an entry when a chapter+task was tagged,
+    // which a session run without picking one never does, even though it
+    // still earns full session credit. The real-seconds counter is written
+    // at every single credit site regardless of chapter tagging, so it's
+    // the only number guaranteed to reflect real time whenever real credit
+    // was actually earned.
+    const realMins = getRealStudySecs(cell.k, cell.focus&&cell.focus.totalSecs)/60;
     const sess = realMins < 10 ? 0 : (cell.tasks.sessions || 0);
     const dailyGoal = getCellDailyGoal(cell);
     // Sunday — neutral when empty, GREEN scale from first session (bonus day)
@@ -6270,6 +6274,37 @@ function todayFocusKey(){ return 'fent_focuslog_'+localDateKey(); }
 function getTodayLog(){try{return JSON.parse(localStorage.getItem(todayFocusKey())||'[]');}catch{return[];}}
 function saveTodayLog(l){try{localStorage.setItem(todayFocusKey(),JSON.stringify(l));}catch{}}
 
+// ── Real study seconds (chapter-agnostic) ───────────────────────────────────
+// getTodayLog()/fent_focuslog_ only ever gets an entry when a chapter+task
+// were actually selected (every write site checks currentChap && currentTask
+// before logging) — but every credit site writes to fent_sessions_ whether or
+// not a chapter was picked. That gap meant a real, fully-credited session run
+// with no chapter tagged left ZERO trace of real elapsed time, which made the
+// heatmap's "under 10 real minutes = red" rule wrongly flag genuine studied
+// time as nothing-done. This counter is incremented at the exact same moment
+// and with the exact same elapsed-seconds value as every fent_sessions_
+// credit write, with no chapter/task requirement — so it's the one number
+// that's guaranteed to reflect real time whenever real credit was earned.
+function realSecsKey(dateStr){ return 'fent_realsecs_'+(dateStr||localDateKey()); }
+function addRealStudySecs(secs,dateStr){
+  if(!secs||secs<=0) return;
+  const k=realSecsKey(dateStr);
+  const cur=parseFloat(localStorage.getItem(k)||'0')||0;
+  try{ localStorage.setItem(k,String(cur+Math.round(secs))); }catch{}
+}
+// Returns real seconds for a day, trusting the counter fully once it exists.
+// For a day that predates this counter entirely (key was never written even
+// as '0' — true legacy data), there's no way to know what really happened,
+// so it falls back to the focus-log total instead of treating decades of
+// past history as if nothing was ever studied.
+function getRealStudySecs(dateStr,legacyFallbackSecs){
+  try{
+    const raw=localStorage.getItem(realSecsKey(dateStr));
+    if(raw!==null) return parseFloat(raw)||0;
+  }catch{}
+  return legacyFallbackSecs||0;
+}
+
 // Questions tracking — same dynamic-key pattern
 function todayQuesKey(){ return 'fent_ques_'+localDateKey(); }
 function getTodayQues(){try{return parseInt(localStorage.getItem(todayQuesKey())||'0');}catch{return 0;}}
@@ -6345,6 +6380,7 @@ function logTestSession(durationSecs, testType, subjectScores, testName, chapter
   const curSess=parseFloat(localStorage.getItem(todaySessKey)||'0');
   localStorage.setItem(todaySessKey, curSess+credit);
   localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+  addRealStudySecs(durationSecs);
 
   const curTestCredit=getTodayTestCredit();
   try{ localStorage.setItem(todayTestCreditKey(), curTestCredit+credit); }catch{}
@@ -6505,6 +6541,7 @@ function recoverFromCrash(){
     const cur = parseFloat(localStorage.getItem(todaySessKey) || '0');
     localStorage.setItem(todaySessKey, cur + 1.0); // store raw float
     localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+    addRealStudySecs(elapsed);
   } else if(fraction >= 0.05) {
     // Partial — same credit logic as focusSkip
     const partial = Math.min(0.9, fraction);
@@ -6512,6 +6549,7 @@ function recoverFromCrash(){
     const cur = parseFloat(localStorage.getItem(todaySessKey) || '0');
     localStorage.setItem(todaySessKey, cur + partial); // store raw float
     localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+    addRealStudySecs(elapsed);
   }
   // fraction < 0.05 → too little, nothing credited
 }
@@ -6590,6 +6628,7 @@ function recoverFromInfiniteCrash(){
     localStorage.setItem(todaySessKey,cur+credit);
     localStorage.setItem('fent_daytarget_'+localDateKey(),focusSettings.dailyTarget);
   }catch(e){}
+  addRealStudySecs(uncommittedSecs);
   checkTargetJustMet();
   toast('✓ Recovered '+Math.round(uncommittedSecs/60)+'m from an interrupted Infinite session');
 }
@@ -7156,6 +7195,7 @@ function focusSubmitManualLog(){
   const cur=parseFloat(localStorage.getItem(todaySessKey)||'0');
   localStorage.setItem(todaySessKey, cur+credit);
   localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+  addRealStudySecs(Math.round(mins*60));
   // Add to today's focus log
   const secs=Math.round(mins*60);
   const log=getTodayLog();
@@ -8413,6 +8453,7 @@ function infiniteCommitSessionCredit(){
   const cur=parseFloat(localStorage.getItem(todaySessKey)||'0');
   localStorage.setItem(todaySessKey,cur+credit);
   localStorage.setItem('fent_daytarget_'+localDateKey(),focusSettings.dailyTarget);
+  addRealStudySecs(deltaSecs);
   infiniteTimer.committedSecs=nowSecs;
   checkTargetJustMet();
 }
@@ -8946,6 +8987,14 @@ function genTaskId(){ return 't'+Date.now().toString(36)+Math.random().toString(
 function yesterdayKey(){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-1); return localDateKey(d); }
 
 function rollOverFromYesterday(){
+  // If today's plan is already locked in, never silently splice extra
+  // tasks into a commitment that's already been made — bail out entirely
+  // and leave every source day untouched (not even marked processed) so
+  // the pending item is simply reconsidered the next time this runs
+  // against a day that isn't locked yet, rather than being lost or
+  // sneaked into a list the person already finalized.
+  const todayBefore=loadTodayResolution();
+  if(todayBefore&&todayBefore.locked) return;
   // Walk backward day by day (not just "yesterday") so an incomplete task
   // still carries forward correctly even if the app wasn't opened for a
   // few days in between — a gap with no resolution record just gets
@@ -9563,6 +9612,7 @@ function focusOnModeEnd(){
     // Snapshot today's session target — so if user later changes target,
     // this day's wasted calc still uses the target that was set when they studied.
     localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+    addRealStudySecs(T.totalSeconds);
     checkTargetJustMet();
   }
 
@@ -9674,6 +9724,7 @@ function focusSkip(){
       localStorage.setItem(todaySessKey, cur + partial); // store raw float, never round on write
       // Snapshot today's target for historical accuracy
       localStorage.setItem('fent_daytarget_'+localDateKey(), focusSettings.dailyTarget);
+      addRealStudySecs(elapsed);
       checkTargetJustMet();
     }
 
