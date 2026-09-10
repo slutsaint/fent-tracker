@@ -5252,17 +5252,21 @@ function buildFocusActivitySections(today){
     // dedicated real-seconds counter (fent_realsecs_) first, since that's
     // written at every credit site with no chapter-tagging requirement.
     // Two fallback tiers below it, so this rule can only ever improve
-    // accuracy for days that predate it — never repaint real history as
-    // if nothing happened:
+    // accuracy for days that predate it:
     //   1) the counter itself, once it exists (most accurate, all future days)
     //   2) the focus-log total, for legacy days that have chapter-tagged time
     //      logged but never got the counter written
-    //   3) if NEITHER exists at all — a genuinely old day, logged before any
-    //      of this, possibly via a path that never tagged a chapter either —
-    //      there is no way to verify real minutes, so skip the 10-min gate
-    //      entirely and just trust the session credit like the app always
-    //      did before this rule existed. Never worse than the original
-    //      behaviour for data this old.
+    //   3) if NEITHER exists — a genuinely old day, logged before any of
+    //      this — there's no direct time record, but the raw session
+    //      credit multiplied by the session length is still a real minutes
+    //      estimate, and it gets gated exactly the same way. This is the
+    //      part that matters: skipping the gate entirely here (trusting
+    //      credit blindly) let tiny old leftover credit — a few real
+    //      minutes' worth — through ungated, which is the exact same bug
+    //      this whole rule exists to catch, just on old data. Estimating
+    //      first and still gating means a real 0.9-credit day (~81 real
+    //      min) reads correctly, while a stray 0.05-credit scrap (~4-5 min)
+    //      still correctly reads as red, same as data with a direct record.
     const hasRealSecsRecord = localStorage.getItem(realSecsKey(cell.k)) !== null;
     const hasFocusLogRecord = !!(cell.focus && cell.focus.totalSecs);
     let sess;
@@ -5270,7 +5274,9 @@ function buildFocusActivitySections(today){
       const realMins = getRealStudySecs(cell.k, cell.focus&&cell.focus.totalSecs)/60;
       sess = realMins < 10 ? 0 : (cell.tasks.sessions || 0);
     } else {
-      sess = cell.tasks.sessions || 0; // no time record of any kind — pre-fix legacy day
+      const rawSess = cell.tasks.sessions || 0;
+      const estMins = rawSess * (focusSettings.sessionMins || 90);
+      sess = estMins < 10 ? 0 : rawSess;
     }
     const dailyGoal = getCellDailyGoal(cell);
     // Sunday — neutral when empty, GREEN scale from first session (bonus day)
