@@ -5249,15 +5249,29 @@ function buildFocusActivitySections(today){
     // A day only counts as "studied" if real elapsed time clears 10 minutes.
     // Below that, treat it exactly like zero — no partial-credit colour —
     // so a stray few-minute tap can't paint a day as progress. Reads the
-    // dedicated real-seconds counter (fent_realsecs_), NOT the focus-log —
-    // the focus-log only gets an entry when a chapter+task was tagged,
-    // which a session run without picking one never does, even though it
-    // still earns full session credit. The real-seconds counter is written
-    // at every single credit site regardless of chapter tagging, so it's
-    // the only number guaranteed to reflect real time whenever real credit
-    // was actually earned.
-    const realMins = getRealStudySecs(cell.k, cell.focus&&cell.focus.totalSecs)/60;
-    const sess = realMins < 10 ? 0 : (cell.tasks.sessions || 0);
+    // dedicated real-seconds counter (fent_realsecs_) first, since that's
+    // written at every credit site with no chapter-tagging requirement.
+    // Two fallback tiers below it, so this rule can only ever improve
+    // accuracy for days that predate it — never repaint real history as
+    // if nothing happened:
+    //   1) the counter itself, once it exists (most accurate, all future days)
+    //   2) the focus-log total, for legacy days that have chapter-tagged time
+    //      logged but never got the counter written
+    //   3) if NEITHER exists at all — a genuinely old day, logged before any
+    //      of this, possibly via a path that never tagged a chapter either —
+    //      there is no way to verify real minutes, so skip the 10-min gate
+    //      entirely and just trust the session credit like the app always
+    //      did before this rule existed. Never worse than the original
+    //      behaviour for data this old.
+    const hasRealSecsRecord = localStorage.getItem(realSecsKey(cell.k)) !== null;
+    const hasFocusLogRecord = !!(cell.focus && cell.focus.totalSecs);
+    let sess;
+    if(hasRealSecsRecord || hasFocusLogRecord){
+      const realMins = getRealStudySecs(cell.k, cell.focus&&cell.focus.totalSecs)/60;
+      sess = realMins < 10 ? 0 : (cell.tasks.sessions || 0);
+    } else {
+      sess = cell.tasks.sessions || 0; // no time record of any kind — pre-fix legacy day
+    }
     const dailyGoal = getCellDailyGoal(cell);
     // Sunday — neutral when empty, GREEN scale from first session (bonus day)
     if(cell.isSun){
